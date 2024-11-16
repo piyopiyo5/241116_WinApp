@@ -50,3 +50,57 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Windows用のシステムファイル
+Thumbs.db
+ehthumbs.db
+
+# VSのビルド出力
+[Dd]ebug/
+[Dd]ebugPublic/
+[Dd]evelopment/
+[Dd]ist/
+[Dd]ebugger/
+[Dd]ebugGame/
+[Dd]ebugFinal/
+
+# ビルドした出力を無視
+bin/
+obj/
+
+# ユーザー個別の設定ファイル
+.vs/
+.vscode/
+.idea/
+
+# .NET Core/ASP.NET Core用の一時ファイル
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# JetBrains Rider, ReSharperなどの設定ファイル
+.idea/
+
+# パッケージ管理のキャッシュ
+.nuget/
+packages/
+
+# テスト関連のファイル
+TestResults/
+
+# アセンブリの出力パスに含まれる一時ファイル
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Visual Studio で自動生成されるワークスペース関連のファイル
+.vs2019/
+.vs2017/
+
+# ログファイル
+*.log
+
+# 一時ファイル
+*.tmp
+*.swp
