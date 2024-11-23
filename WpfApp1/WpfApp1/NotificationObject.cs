@@ -17,6 +17,14 @@ namespace WpfApp1
             if (h != null) h(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        /// プロパティの値を設定する
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="target"></param>
+        /// <param name="value"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
         protected bool SetProperty<T>(ref T target, T value, [CallerMemberName] string? propertyName = null)
         {
             if (Equals(target, value))
