@@ -18,26 +18,59 @@
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
         </StatusBar>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
+        <TabControl>
+            <TabItem Header="タイマー">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="割られる数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Lhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="割る数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Rhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
-            <Button  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="割り算する" Command="{Binding DivCommand}" Margin="2" />
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="結果 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result, Mode=OneWay}" IsReadOnly="True" Margin="2" />
-        </Grid>
+                    <!--１列目　名前-->
+                    <TextBox Grid.Row="0" Grid.Column="0" Text="タイマー１" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+
+                    <!--２列目　カウントアップタイマー-->
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Timer1, Mode=OneWay}" IsReadOnly="True" Margin="2" />
+
+                    <!--３列目　開始ボタン-->
+                    <Button Grid.Row="0" Grid.Column="2" Content="開始" Command="{Binding StartCommand}" Width="40" Margin="2" />
+
+                    <!--４列目　停止ボタン-->
+                    <Button Grid.Row="0" Grid.Column="3" Content="停止" Command="{Binding StopCommand}" Width="40" Margin="2" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="割り算">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="割られる数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Lhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="割る数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Rhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+                    <Button  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="割り算する" Command="{Binding DivCommand}" Margin="2" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="結果 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result, Mode=OneWay}" IsReadOnly="True" Margin="2" />
+                </Grid>
+            </TabItem>
+
+        </TabControl>
     </DockPanel>
-        
+
 </Window>

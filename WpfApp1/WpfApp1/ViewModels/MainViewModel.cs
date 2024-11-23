@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using WpfApp1.Models;
 
 namespace WpfApp1.ViewModels
@@ -14,6 +15,15 @@ namespace WpfApp1.ViewModels
         public MainViewModel()
         {
             _calc = new Calculator();
+
+            // タイマーの初期設定
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _timer.Tick += OnTimerTick;
+
+            Timer1 = "00:00:00"; // 初期値
         }
 
         #region 3章のコード
@@ -154,6 +164,70 @@ namespace WpfApp1.ViewModels
             {
                 return _openFileCommand ??= new DelegateCommand(_ => System.Diagnostics.Debug.WriteLine("ファイルを開きます。"));
             }
+        }
+
+        #endregion
+
+        #region タイマー
+
+        private DispatcherTimer _timer;
+        private TimeSpan _currentTime = TimeSpan.Zero;
+        private bool _isRunning;
+
+        private string _timer1;
+        public string Timer1
+        {
+            get { return _result; }
+            private set { SetProperty(ref _result, value); }
+        }
+
+        private DelegateCommand _startCommand;
+        public DelegateCommand StartCommand
+        {
+            get
+            {
+                return _startCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        if (!_isRunning)
+                        {
+                            _timer.Start();
+                            _isRunning = true;
+                        }
+                    },
+                    _ => true);
+            }
+        }
+
+        private DelegateCommand _stopCommand;
+        public DelegateCommand StopCommand
+        {
+            get
+            {
+                return _stopCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        if (_isRunning)
+                        {
+                            // 停止中
+                            _timer.Stop();
+                            _isRunning = false;
+                        }
+                        else
+                        {
+                            // 停止中に再度停止ボタンを押すとリセット
+                            _currentTime = TimeSpan.Zero;
+                            Timer1 = "00:00:00";
+                        }
+                    },
+                    _ => true);
+            }
+        }
+
+        private void OnTimerTick(object? sender, EventArgs e)
+        {
+            _currentTime = _currentTime.Add(TimeSpan.FromSeconds(1));
+            Timer1 = _currentTime.ToString(@"hh\:mm\:ss");
         }
 
         #endregion
