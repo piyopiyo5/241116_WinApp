@@ -11,6 +11,11 @@ namespace WpfApp1.ViewModels
 {
     internal class MainViewModel : NotificationObject
     {
+        public MainViewModel()
+        {
+            _calc = new Calculator();
+        }
+
         #region 3章のコード
         private string? _upperString;
         public string UpperString
@@ -60,10 +65,6 @@ namespace WpfApp1.ViewModels
 
         #region 4章のコード
         private Calculator _calc;
-        public MainViewModel()
-        {
-            _calc = new Calculator();
-        }
 
         private string _lhs;
         public string Lhs
@@ -138,6 +139,21 @@ namespace WpfApp1.ViewModels
             _calc.Rhs = rhs;
             _calc.ExecuteDiv();
             Result = _calc.Result.ToString();
+        }
+
+        #endregion
+
+        #region 5章のコード
+        private DelegateCommand _openFileCommand;
+        /// <summary> 
+        /// ファイルを開くコマンドを取得します。 
+        /// </summary> 
+        public DelegateCommand OpenFileCommand
+        {
+            get
+            {
+                return _openFileCommand ??= new DelegateCommand(_ => System.Diagnostics.Debug.WriteLine("ファイルを開きます。"));
+            }
         }
 
         #endregion

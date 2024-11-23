@@ -9,24 +9,35 @@
         Width="300"
         SizeToContent="Height" 
         Background="Cornsilk">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="ファイル (_F)">
+                <MenuItem Header="開く(_O)" Command="{Binding OpenFileCommand}"/>
+            </MenuItem>
+            <MenuItem Header="ヘルプ (_H)" />
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+        </StatusBar>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="割られる数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Lhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="割る数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Rhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
-        <Button  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="割り算する" Command="{Binding DivCommand}" Margin="2" />
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="結果 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result, Mode=OneWay}" IsReadOnly="True" Margin="2" />
-    </Grid>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="割られる数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Lhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="割る数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Rhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+            <Button  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="割り算する" Command="{Binding DivCommand}" Margin="2" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="結果 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result, Mode=OneWay}" IsReadOnly="True" Margin="2" />
+        </Grid>
+    </DockPanel>
+        
 </Window>
