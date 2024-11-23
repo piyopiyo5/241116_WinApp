@@ -9,6 +9,6 @@
     <StackPanel>
         <TextBox Text="{Binding InputString, UpdateSourceTrigger=PropertyChanged}" />
         <TextBlock Text="{Binding UpperString}" />
-        <Button Content="Click me." />
+        <Button Content="Clear" Command="{Binding ClearCommand}" />
     </StackPanel>
 </Window>

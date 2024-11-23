@@ -28,12 +28,30 @@ namespace WpfApp1.ViewModels
             {
                 if (SetProperty(ref _inputString, value))
                 {
-                    // 入力された文字列を大文字に変換します 
+                    // 入力された文字列を大文字に変換する
                     UpperString = _inputString.ToUpper();
 
-                    // 出力ウィンドウに結果を表示します 
+                    // ClearCommandのCanExecuteChangedイベントを発生させる
+                    ClearCommand.RaiseCanExecuteChanged();
+
+                    // 出力ウィンドウに結果を表示する
                     System.Diagnostics.Debug.WriteLine("UpperString=" + UpperString);
                 }
+            }
+        }
+
+        private DelegateCommand? _clearCommand;
+        public DelegateCommand ClearCommand
+        {
+            get
+            {
+                // ClearCommandがnullの場合は新しいインスタンスを生成する
+                _clearCommand ??= new DelegateCommand(
+                    _ => InputString = "",
+                    _ => !string.IsNullOrEmpty(InputString));
+
+                // コマンドを実行する
+                return _clearCommand;
             }
         }
     }
