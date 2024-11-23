@@ -76,6 +76,12 @@
                     <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result, Mode=OneWay}" IsReadOnly="True" Margin="2" />
                 </Grid>
             </TabItem>
+            <TabItem Header="NumLockKeep">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button Content="ON" Command="{Binding EnableNumLockKeepCommand}" Width="100" Margin="5" />
+                    <Button Content="OFF" Command="{Binding DisableNumLockKeepCommand}" Width="100" Margin="5" />
+                </StackPanel>
+            </TabItem>
 
         </TabControl>
     </DockPanel>

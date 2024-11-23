@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -19,11 +20,19 @@ namespace WpfApp1.ViewModels
 
             Timers = new ObservableCollection<TimerViewModel>();
 
-            // 例として3行のタイマーを作成
-            for (int i = 0; i < 3; i++)
+            // 複数のタイマーを作成
+            for (int i = 0; i < 7; i++)
             {
                 Timers.Add(new TimerViewModel($"タイマー{i + 1}"));
             }
+
+            EnableNumLockKeepCommand = new DelegateCommand(_ => EnableNumLockKeep());
+            DisableNumLockKeepCommand = new DelegateCommand(_ => DisableNumLockKeep());
+            _numLockTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _numLockTimer.Tick += CheckAndEnableNumLock;
         }
 
         #region 3章のコード
@@ -172,7 +181,103 @@ namespace WpfApp1.ViewModels
         // 複数のタイマーを管理するObservableCollection
         public ObservableCollection<TimerViewModel> Timers { get; }
 
-        
+        private DispatcherTimer _numLockTimer;
+        private bool _isNumLockKeepEnabled;
+
+        // コマンド: NumLockKeepを有効にする
+        public DelegateCommand EnableNumLockKeepCommand { get; }
+
+        // コマンド: NumLockKeepを無効にする
+        public DelegateCommand DisableNumLockKeepCommand { get; }
+
+        private void EnableNumLockKeep()
+        {
+            _isNumLockKeepEnabled = true;
+            _numLockTimer.Start();
+        }
+
+        private void DisableNumLockKeep()
+        {
+            _isNumLockKeepEnabled = false;
+            _numLockTimer.Stop();
+        }
+
+        private void CheckAndEnableNumLock(object sender, EventArgs e)
+        {
+            if (_isNumLockKeepEnabled && !IsNumLockActive())
+            {
+                ToggleNumLock();
+            }
+        }
+
+        // NumLockの状態を確認する
+        private bool IsNumLockActive()
+        {
+            return (GetKeyState(0x90) & 0x0001) != 0;
+        }
+
+        // NumLockをトグルする
+        private void ToggleNumLock()
+        {
+            // NumLockキーを押下
+            SendKey(0x90, true);
+            // NumLockキーを解放
+            SendKey(0x90, false);
+        }
+
+        // WinAPI: キーボードの状態を取得する
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        private static extern short GetKeyState(int keyCode);
+
+        // キー入力をシミュレーション
+        private void SendKey(byte keyCode, bool isKeyDown)
+        {
+            INPUT input = new INPUT
+            {
+                Type = 1 // INPUT_KEYBOARD
+            };
+            input.Data.Keyboard = new KEYBDINPUT
+            {
+                Vk = keyCode,
+                Scan = 0,
+                Flags = isKeyDown ? 0 : KEYEVENTF_KEYUP,
+                Time = 0,
+                ExtraInfo = IntPtr.Zero
+            };
+
+            SendInput(1, new INPUT[] { input }, Marshal.SizeOf(typeof(INPUT)));
+        }
+
+        // WinAPI: キーボード入力をシミュレーション
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
+
+        // INPUT構造体
+        [StructLayout(LayoutKind.Sequential)]
+        private struct INPUT
+        {
+            public int Type;
+            public InputUnion Data;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        private struct InputUnion
+        {
+            [FieldOffset(0)] public KEYBDINPUT Keyboard;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct KEYBDINPUT
+        {
+            public ushort Vk;
+            public ushort Scan;
+            public uint Flags;
+            public uint Time;
+            public IntPtr ExtraInfo;
+        }
+
+        private const int INPUT_KEYBOARD = 1;
+        private const uint KEYEVENTF_KEYUP = 0x0002;
     }
 
     internal class TimerViewModel : NotificationObject
