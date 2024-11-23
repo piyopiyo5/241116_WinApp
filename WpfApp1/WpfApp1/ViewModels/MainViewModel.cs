@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -16,14 +17,13 @@ namespace WpfApp1.ViewModels
         {
             _calc = new Calculator();
 
-            // タイマーの初期設定
-            _timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(1)
-            };
-            _timer.Tick += OnTimerTick;
+            Timers = new ObservableCollection<TimerViewModel>();
 
-            Timer1 = "00:00:00"; // 初期値
+            // 例として3行のタイマーを作成
+            for (int i = 0; i < 3; i++)
+            {
+                Timers.Add(new TimerViewModel($"タイマー{i + 1}"));
+            }
         }
 
         #region 3章のコード
@@ -168,17 +168,45 @@ namespace WpfApp1.ViewModels
 
         #endregion
 
-        #region タイマー
 
+        // 複数のタイマーを管理するObservableCollection
+        public ObservableCollection<TimerViewModel> Timers { get; }
+
+        
+    }
+
+    internal class TimerViewModel : NotificationObject
+    {
         private DispatcherTimer _timer;
         private TimeSpan _currentTime = TimeSpan.Zero;
         private bool _isRunning;
 
-        private string _timer1;
-        public string Timer1
+        public TimerViewModel(string name)
         {
-            get { return _result; }
-            private set { SetProperty(ref _result, value); }
+            Name = name;
+            TimerValue = "00:00:00";
+
+            // タイマーの初期設定
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _timer.Tick += OnTimerTick;
+        }
+
+        // ユーザーが編集できるタイマー名
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name, value); // 編集可能
+        }
+
+        private string _timerValue;
+        public string TimerValue
+        {
+            get => _timerValue;
+            private set => SetProperty(ref _timerValue, value);
         }
 
         private DelegateCommand _startCommand;
@@ -209,7 +237,6 @@ namespace WpfApp1.ViewModels
                     {
                         if (_isRunning)
                         {
-                            // 停止中
                             _timer.Stop();
                             _isRunning = false;
                         }
@@ -217,7 +244,7 @@ namespace WpfApp1.ViewModels
                         {
                             // 停止中に再度停止ボタンを押すとリセット
                             _currentTime = TimeSpan.Zero;
-                            Timer1 = "00:00:00";
+                            TimerValue = "00:00:00";
                         }
                     },
                     _ => true);
@@ -227,9 +254,7 @@ namespace WpfApp1.ViewModels
         private void OnTimerTick(object? sender, EventArgs e)
         {
             _currentTime = _currentTime.Add(TimeSpan.FromSeconds(1));
-            Timer1 = _currentTime.ToString(@"hh\:mm\:ss");
+            TimerValue = _currentTime.ToString(@"hh\:mm\:ss");
         }
-
-        #endregion
     }
 }
