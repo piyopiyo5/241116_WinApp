@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:WpfApp1.Views"
         mc:Ignorable="d"
         Title="MainView" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+    <StackPanel>
+        <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBlock Text="{Binding Result}" />
+        <Button Content="Click me." Command="{Binding ClearCommand}" />
+    </StackPanel>
 </Window>
