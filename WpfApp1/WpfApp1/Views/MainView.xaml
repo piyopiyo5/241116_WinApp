@@ -19,40 +19,46 @@
         </StatusBar>
         <TabControl>
             <TabItem Header="タイマー">
-                <ListBox ItemsSource="{Binding Timers}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="130" />
-                                    <ColumnDefinition Width="70" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
+                <DockPanel>
+                    <!-- タイマーリスト -->
+                    <ListBox DockPanel.Dock="Top" ItemsSource="{Binding Timers}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="130" />
+                                        <ColumnDefinition Width="70" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                                <!-- ユーザーが編集可能なタイマー名 -->
-                                <TextBox Grid.Row="0" Grid.Column="0" 
-                                         Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
-                                         VerticalAlignment="Center" Margin="2" />
+                                    <!-- ユーザーが編集可能なタイマー名 -->
+                                    <TextBox Grid.Row="0" Grid.Column="0" 
+                                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                                     VerticalAlignment="Center" Margin="2" />
 
-                                <!-- カウントアップタイマー -->
-                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TimerValue, Mode=OneWay}" IsReadOnly="True" Margin="2" />
+                                    <!-- カウントアップタイマー -->
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TimerValue, Mode=OneWay}" IsReadOnly="True" Margin="2" />
 
-                                <!-- 開始ボタン -->
-                                <Button Grid.Row="0" Grid.Column="2" Content="開始" Command="{Binding StartCommand}" Width="40" Margin="2" />
+                                    <!-- 開始ボタン -->
+                                    <Button Grid.Row="0" Grid.Column="2" Content="開始" Command="{Binding StartCommand}" Width="40" Margin="2" />
 
-                                <!-- 停止ボタン -->
-                                <Button Grid.Row="0" Grid.Column="3" Content="停止" Command="{Binding StopCommand}" Width="40" Margin="2" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                                    <!-- 停止ボタン -->
+                                    <Button Grid.Row="0" Grid.Column="3" Content="停止" Command="{Binding StopCommand}" Width="40" Margin="2" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <!-- タイマー追加ボタン -->
+                    <Button DockPanel.Dock="Bottom" Content="タイマーを追加" Command="{Binding AddTimerCommand}" Margin="5" Height="30"/>
+                </DockPanel>
             </TabItem>
             <TabItem Header="割り算">
                 <Grid>

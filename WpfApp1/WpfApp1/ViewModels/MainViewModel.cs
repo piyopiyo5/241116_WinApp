@@ -172,7 +172,19 @@ namespace WpfApp1.ViewModels
         // 複数のタイマーを管理するObservableCollection
         public ObservableCollection<TimerViewModel> Timers { get; }
 
-        
+        private DelegateCommand _addTimerCommand;
+        public DelegateCommand AddTimerCommand
+        {
+            get
+            {
+                return _addTimerCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        int newTimerIndex = Timers.Count + 1;
+                        Timers.Add(new TimerViewModel($"タイマー{newTimerIndex}"));
+                    });
+            }
+        }
     }
 
     internal class TimerViewModel : NotificationObject
