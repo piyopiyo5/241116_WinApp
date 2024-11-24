@@ -206,7 +206,13 @@ namespace WpfApp1.ViewModels
         public string TimerValue
         {
             get => _timerValue;
-            private set => SetProperty(ref _timerValue, value);
+            private set
+            {
+                if (SetProperty(ref _timerValue, value))
+                {
+                    UpdateCommandStates();
+                }
+            }
         }
 
         private DelegateCommand _startCommand;
@@ -223,7 +229,7 @@ namespace WpfApp1.ViewModels
                             _isRunning = true;
                         }
                     },
-                    _ => true);
+                    _ => TimerValue == "00:00:00" && !_isRunning);
             }
         }
 
@@ -247,7 +253,7 @@ namespace WpfApp1.ViewModels
                             TimerValue = "00:00:00";
                         }
                     },
-                    _ => true);
+                    _ => TimerValue != "00:00:00" || _isRunning);
             }
         }
 
@@ -255,6 +261,12 @@ namespace WpfApp1.ViewModels
         {
             _currentTime = _currentTime.Add(TimeSpan.FromSeconds(1));
             TimerValue = _currentTime.ToString(@"hh\:mm\:ss");
+        }
+
+        private void UpdateCommandStates()
+        {
+            StartCommand.RaiseCanExecuteChanged();
+            StopCommand.RaiseCanExecuteChanged();
         }
     }
 }
