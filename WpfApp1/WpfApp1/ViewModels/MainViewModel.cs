@@ -5,9 +5,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using WpfApp1.Models;
+using System.IO;
+using System.Text.Json;
 
 namespace WpfApp1.ViewModels
 {
@@ -19,10 +22,20 @@ namespace WpfApp1.ViewModels
 
             Timers = new ObservableCollection<TimerViewModel>();
 
-            // 例として3行のタイマーを作成
-            for (int i = 0; i < 3; i++)
+            // 保存されたタイマー名を読み込む
+            var savedTimerNames = TimerDataStorage.LoadTimers();
+            foreach (var name in savedTimerNames)
             {
-                Timers.Add(new TimerViewModel($"タイマー{i + 1}"));
+                Timers.Add(new TimerViewModel(name));
+            }
+
+            // デフォルトでタイマーがなければ3つ作成
+            if (Timers.Count == 0)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Timers.Add(new TimerViewModel($"タイマー{i + 1}"));
+                }
             }
         }
 
@@ -185,6 +198,34 @@ namespace WpfApp1.ViewModels
                     });
             }
         }
+
+        internal static class TimerDataStorage
+        {
+            private const string FilePath = "timers.json";
+
+            public static void SaveTimers(IEnumerable<string> timerNames)
+            {
+                var json = JsonSerializer.Serialize(timerNames);
+                File.WriteAllText(FilePath, json);
+            }
+
+            public static IEnumerable<string> LoadTimers()
+            {
+                if (File.Exists(FilePath))
+                {
+                    var json = File.ReadAllText(FilePath);
+                    return JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
+                }
+                return new List<string>();
+            }
+        }
+
+        public void SaveTimers()
+        {
+            var timerNames = Timers.Select(timer => timer.Name).ToList();
+            TimerDataStorage.SaveTimers(timerNames);
+        }
+
     }
 
     internal class TimerViewModel : NotificationObject

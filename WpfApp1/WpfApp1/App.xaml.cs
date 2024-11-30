@@ -15,9 +15,20 @@ namespace WpfApp1
         {
             base.OnStartup(e);
             var w = new MainView();
+            Application.Current.MainWindow = w;
             var vm = new MainViewModel();
             w.DataContext = vm;
             w.Show();
         }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            if (Application.Current.MainWindow.DataContext is MainViewModel viewModel)
+            {
+                viewModel.SaveTimers();
+            }
+            base.OnExit(e);
+        }
+
     }
 }
