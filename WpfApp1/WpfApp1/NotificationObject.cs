@@ -24,7 +24,7 @@ namespace WpfApp1
         /// <param name="target"></param>
         /// <param name="value"></param>
         /// <param name="propertyName"></param>
-        /// <returns></returns>
+        /// <returns>プロパティに変更があった場合はtrue、同じ値の場合はfalse</returns>
         protected bool SetProperty<T>(ref T target, T value, [CallerMemberName] string? propertyName = null)
         {
             if (Equals(target, value))
