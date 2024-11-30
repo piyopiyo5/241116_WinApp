@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Printing;
@@ -11,21 +12,48 @@ using WpfApp1.Models;
 
 namespace WpfApp1.ViewModels
 {
+    /// <summary>
+    /// 定数クラス
+    /// </summary>
+    internal class Const
+    {
+        public const int CountUpTimerMax = 6;
+        public const int TimerTickInterval = 1;
+    }
+
+    /// <summary>
+    /// メイン画面のViewModel
+    /// </summary>
     internal class MainViewModel : NotificationObject
     {
         public MainViewModel()
         {
+            // Calculatorクラスのインスタンスを生成する
             _calc = new Calculator();
 
+            // 1秒おきにTickイベントを発生させるタイマーを生成する
             _timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(1) // 1秒ごとに更新
+                Interval = TimeSpan.FromSeconds(Const.TimerTickInterval)
             };
             _timer.Tick += Timer_Tick;
             _timer.Start();
 
-            // 初期時刻を表示
-            UpdateClock();
+            // カウントアップタイマーのリストを生成する
+            CountUpTimers = new ObservableCollection<CountUpTimer>();
+            for (int i = 0; i < Const.CountUpTimerMax; i++)
+            {
+                CountUpTimers.Add(new CountUpTimer());
+            }
+
+            // 各タイマーに他のタイマーのリストを設定する
+            foreach (var timer in CountUpTimers)
+            {
+                timer.OtherTimers = CountUpTimers.Where(t => t != timer).ToList();
+            }
+
+            // 先頭のタイマーをスタートする
+            CountUpTimers[0].StartTimer();
         }
 
         #region 3章のコード
@@ -184,7 +212,10 @@ namespace WpfApp1.ViewModels
         private void Timer_Tick(object? sender, EventArgs e)
         {
             UpdateClock();
-            UpdateCountUpTimer();
+            foreach (var timer in CountUpTimers)
+            {
+                timer.UpdateCountUpTimer();
+            }
         }
 
         // 時計表示を更新する
@@ -196,15 +227,30 @@ namespace WpfApp1.ViewModels
 
         #region カウントアップタイマーのコード
 
-        private TimeSpan _elapsedTime = TimeSpan.Zero;
-        private bool _isCountUpTimerRunning = false;
+        // 複数のタイマーを管理するObservableCollection
+        public ObservableCollection<CountUpTimer> CountUpTimers { get; }
 
+        #endregion
+    }
+
+    /// <summary>
+    /// カウントアップタイマー
+    /// </summary>
+    internal class CountUpTimer : NotificationObject
+    {
+        private TimeSpan _elapsedTime = TimeSpan.Zero; // 経過時間
+        private bool _isCountUpTimerRunning = false; // カウントアップタイマーが動作中かどうか
+
+        // カウントアップタイマーの表示文字列
         private string _countUpTimerText = "00:00:00";
         public string CountUpTimerText
         {
             get { return _countUpTimerText; }
             private set { SetProperty(ref _countUpTimerText, value); }
         }
+
+        // 他のタイマーの参照リスト
+        public List<CountUpTimer> OtherTimers { get; set; } = new List<CountUpTimer>();
 
         // タイマースタートコマンド
         private DelegateCommand? _timerStartCommand;
@@ -215,9 +261,14 @@ namespace WpfApp1.ViewModels
                 return _timerStartCommand ??= new DelegateCommand(
                     _ =>
                     {
-                        _isCountUpTimerRunning = true;
-                        TimerStartCommand.RaiseCanExecuteChanged();
-                        TimerStopCommand.RaiseCanExecuteChanged();
+                        // 他のタイマーを停止
+                        foreach (var timer in OtherTimers)
+                        {
+                            timer.StopTimer();
+                        }
+
+                        // 自身をスタート
+                        StartTimer();
                     },
                     _ => !_isCountUpTimerRunning);
             }
@@ -232,16 +283,28 @@ namespace WpfApp1.ViewModels
                 return _timerStopCommand ??= new DelegateCommand(
                     _ =>
                     {
-                        _isCountUpTimerRunning = false;
-                        TimerStartCommand.RaiseCanExecuteChanged();
-                        TimerStopCommand.RaiseCanExecuteChanged();
+                        StopTimer();
                     },
                     _ => _isCountUpTimerRunning);
             }
         }
 
-        // タイマー更新
-        private void UpdateCountUpTimer()
+        // タイマー開始
+        public void StartTimer()
+        {
+            _isCountUpTimerRunning = true;
+            UpdateCommandStates();
+        }
+
+        // タイマー停止
+        private void StopTimer()
+        {
+            _isCountUpTimerRunning = false;
+            UpdateCommandStates();
+        }
+
+        // タイマー表示更新
+        public void UpdateCountUpTimer()
         {
             if (_isCountUpTimerRunning)
             {
@@ -250,7 +313,11 @@ namespace WpfApp1.ViewModels
             }
         }
 
-        #endregion
-
+        // コマンドの状態を更新する
+        private void UpdateCommandStates()
+        {
+            TimerStartCommand.RaiseCanExecuteChanged();
+            TimerStopCommand.RaiseCanExecuteChanged();
+        }
     }
 }

@@ -9,16 +9,16 @@ namespace WpfApp1
 {
     internal class DelegateCommand : ICommand
     {
-        private Action<object> _execute;// 実行する処理
-        private Func<object, bool>? _canExecute;// 実行可能かどうかを判定する処理
+        private Action<object?> _execute;// 実行する処理
+        private Func<object?, bool>? _canExecute;// 実行可能かどうかを判定する処理
 
-        public DelegateCommand(Action<object> execute, Func<object, bool>? canExecute)
+        public DelegateCommand(Action<object?> execute, Func<object?, bool>? canExecute)
         {
             _execute = execute;
             _canExecute = canExecute;
         }
 
-        public DelegateCommand(Action<object> execute)
+        public DelegateCommand(Action<object?> execute)
             : this(execute, null)
         {
         }
@@ -39,10 +39,6 @@ namespace WpfApp1
         {
             if (CanExecuteChanged != null)
             {
-                //if (parameter == null)
-                //{
-                //    throw new ArgumentNullException(nameof(parameter), "Parameter cannot be null.");
-                //}
                 _execute(parameter);
             }
         }
