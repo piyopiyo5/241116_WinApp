@@ -11,7 +11,7 @@ namespace WpfApp1
     internal abstract class NotificationObject : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void RaiseProeprtyChanged([CallerMemberName] string? propertyName = null)
+        protected void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
         {
             var h = this.PropertyChanged;
             if (h != null) h(this, new PropertyChangedEventArgs(propertyName));
@@ -30,7 +30,7 @@ namespace WpfApp1
             if (Equals(target, value))
                 return false;
             target = value;
-            RaiseProeprtyChanged(propertyName);
+            RaisePropertyChanged(propertyName);
             return true;
         }
     }
