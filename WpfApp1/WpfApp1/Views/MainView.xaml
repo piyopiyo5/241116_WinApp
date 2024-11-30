@@ -42,15 +42,12 @@
 
                                 <!-- ユーザーが編集可能なタイマー名 -->
                                 <TextBox Grid.Row="0" Grid.Column="0" 
-                                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                                     Text="{Binding TimerName, UpdateSourceTrigger=PropertyChanged}" 
                                      VerticalAlignment="Center" Margin="2" />
-
                                 <!-- カウントアップタイマー -->
                                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CountUpTimerText, Mode=OneWay}" IsReadOnly="True" Margin="2" />
-
                                 <!-- 開始ボタン -->
                                 <Button Grid.Row="0" Grid.Column="2" Content="開始" Command="{Binding TimerStartCommand}" Width="40" Margin="2" />
-
                                 <!-- 停止ボタン -->
                                 <Button Grid.Row="0" Grid.Column="3" Content="停止" Command="{Binding TimerStopCommand}" Width="40" Margin="2" />
                             </Grid>
@@ -81,7 +78,7 @@
                     <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result, Mode=OneWay}" IsReadOnly="True" Margin="2" />
                 </Grid>
             </TabItem>
-            <!--割り算タブ-->
+            <!--設定タブ-->
             <TabItem Header="設定">
                 <Grid>
                     <Grid.RowDefinitions>

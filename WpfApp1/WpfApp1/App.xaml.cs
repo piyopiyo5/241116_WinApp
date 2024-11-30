@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.Collections.Specialized;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 using WpfApp1.ViewModels;
@@ -14,10 +15,22 @@ namespace WpfApp1
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            var savedTimerNames = LoadTimerNames(); // タイマー名の読み込み
             var w = new MainView();
             var vm = new MainViewModel(w);
             w.DataContext = vm;
             w.Show();
         }
+
+        //private StringCollection LoadTimerNames()
+        //{
+        //    return Properties.Values.
+        //}
+
+        //private void SaveTimerNames(StringCollection timerNames)
+        //{
+        //    Properties.Settings.Default.TimerNames = timerNames;
+        //    Properties.Settings.Default.Save();
+        //}
     }
 }

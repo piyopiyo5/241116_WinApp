@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Printing;
@@ -31,6 +32,9 @@ namespace WpfApp1.ViewModels
 
         public MainViewModel(Window window)
         {
+            // タイマー名を復元
+            LoadTimerNames();
+
             // ウィンドウを保持する
             _window = window;
 
@@ -49,7 +53,15 @@ namespace WpfApp1.ViewModels
             CountUpTimers = new ObservableCollection<CountUpTimer>();
             for (int i = 0; i < Const.CountUpTimerMax; i++)
             {
-                CountUpTimers.Add(new CountUpTimer());
+                var timer = new CountUpTimer();
+
+                // 保存されたタイマー名を適用
+                if (i < _savedTimerNames.Count)
+                {
+                    timer.TimerName = _savedTimerNames[i];
+                }
+
+                CountUpTimers.Add(timer);
             }
 
             // 各タイマーに他のタイマーのリストを設定する
@@ -283,6 +295,29 @@ namespace WpfApp1.ViewModels
             EnableAlwaysOnTopCommand.RaiseCanExecuteChanged();
             DisableAlwaysOnTopCommand.RaiseCanExecuteChanged();
         }
+
+        // アプリ終了時にタイマー名を保存
+        public void SaveTimerNames()
+        {
+            var timerNames = new StringCollection();
+            foreach (var timer in CountUpTimers)
+            {
+                timerNames.Add(timer.TimerName);
+            }
+
+            Properties.Settings.Default.TimerNames = timerNames;
+            Properties.Settings.Default.Save();
+        }
+
+        // 起動時にタイマー名を復元
+        private List<string> _savedTimerNames = new List<string>();
+        private void LoadTimerNames()
+        {
+            if (Properties.Settings.Default.TimerNames != null)
+            {
+                _savedTimerNames = Properties.Settings.Default.TimerNames.Cast<string>().ToList();
+            }
+        }
         #endregion
     }
 
@@ -293,6 +328,14 @@ namespace WpfApp1.ViewModels
     {
         private TimeSpan _elapsedTime = TimeSpan.Zero; // 経過時間
         private bool _isCountUpTimerRunning = false; // カウントアップタイマーが動作中かどうか
+
+        // タイマーの名前
+        private string _timerName = "タイマー";
+        public string TimerName
+        {
+            get { return _timerName; }
+            set { SetProperty(ref _timerName, value); }
+        }
 
         // カウントアップタイマーの表示文字列
         private string _countUpTimerText = "00:00:00";
