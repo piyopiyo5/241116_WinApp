@@ -17,27 +17,55 @@
             <MenuItem Header="ヘルプ (_H)" />
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem HorizontalAlignment="Right">
+                <TextBlock Text="{Binding ClockText,UpdateSourceTrigger=PropertyChanged}" />
+            </StatusBarItem>
         </StatusBar>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
+        <TabControl DockPanel.Dock="Top">
+            <!--時間計測タブ-->
+            <TabItem Header="時間計測">
+                <Grid>
+                    <!--グリッド定義-->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="70" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                </Grid>
+            </TabItem>
+            <!--割り算タブ-->
+            <TabItem Header="割り算">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="割られる数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Lhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="割る数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Rhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
-            <Button  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="割り算する" Command="{Binding DivCommand}" Margin="2" />
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="結果 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
-            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result, Mode=OneWay}" IsReadOnly="True" Margin="2" />
-        </Grid>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="割られる数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Lhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="割る数 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Rhs,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+                    <Button  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="割り算する" Command="{Binding DivCommand}" Margin="2" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="結果 :" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result, Mode=OneWay}" IsReadOnly="True" Margin="2" />
+                </Grid>
+            </TabItem>
+        </TabControl>
     </DockPanel>
-        
+
 </Window>

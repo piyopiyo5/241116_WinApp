@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using WpfApp1.Models;
 
 namespace WpfApp1.ViewModels
@@ -14,6 +16,16 @@ namespace WpfApp1.ViewModels
         public MainViewModel()
         {
             _calc = new Calculator();
+
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1) // 1秒ごとに更新
+            };
+            _timer.Tick += Timer_Tick;
+            _timer.Start();
+
+            // 初期時刻を表示
+            UpdateClock();
         }
 
         #region 3章のコード
@@ -154,6 +166,30 @@ namespace WpfApp1.ViewModels
             {
                 return _openFileCommand ??= new DelegateCommand(_ => System.Diagnostics.Debug.WriteLine("ファイルを開きます。"));
             }
+        }
+
+        #endregion
+
+        #region 時計表示のコード
+        // タイマー
+        private DispatcherTimer _timer;
+        private string _clockText = string.Empty;
+        public string ClockText
+        {
+            get { return _clockText; }
+            private set { SetProperty(ref _clockText, value); }
+        }
+
+        // １秒ごとに呼び出されるイベントハンドラ
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            UpdateClock();
+        }
+
+        // 時計表示を更新する
+        private void UpdateClock()
+        {
+            ClockText = DateTime.Now.ToString("HH:mm:ss");
         }
 
         #endregion
