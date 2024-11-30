@@ -13,6 +13,8 @@ namespace WpfApp1.ViewModels
 {
     internal class MainViewModel : NotificationObject
     {
+        public CountUpTimer CountUpTimer1;
+
         public MainViewModel()
         {
             _calc = new Calculator();
@@ -23,6 +25,8 @@ namespace WpfApp1.ViewModels
             };
             _timer.Tick += Timer_Tick;
             _timer.Start();
+
+            CountUpTimer1 = new CountUpTimer();
 
             // 初期時刻を表示
             UpdateClock();
@@ -111,6 +115,11 @@ namespace WpfApp1.ViewModels
             private set { SetProperty(ref _result, value); }
         }
 
+        public string CountUpTimer
+        {
+            get { return CountUpTimer1.CountUpTimerText; }
+        }
+
         // 割り算コマンド
         private DelegateCommand? _divCommand;
         public DelegateCommand DivCommand
@@ -184,7 +193,7 @@ namespace WpfApp1.ViewModels
         private void Timer_Tick(object? sender, EventArgs e)
         {
             UpdateClock();
-            UpdateCountUpTimer();
+            CountUpTimer1.UpdateCountUpTimer();
         }
 
         // 時計表示を更新する
@@ -194,63 +203,6 @@ namespace WpfApp1.ViewModels
         }
         #endregion
 
-        #region カウントアップタイマーのコード
-
-        private TimeSpan _elapsedTime = TimeSpan.Zero;
-        private bool _isCountUpTimerRunning = false;
-
-        private string _countUpTimerText = "00:00:00";
-        public string CountUpTimerText
-        {
-            get { return _countUpTimerText; }
-            private set { SetProperty(ref _countUpTimerText, value); }
-        }
-
-        // タイマースタートコマンド
-        private DelegateCommand? _timerStartCommand;
-        public DelegateCommand TimerStartCommand
-        {
-            get
-            {
-                return _timerStartCommand ??= new DelegateCommand(
-                    _ =>
-                    {
-                        _isCountUpTimerRunning = true;
-                        TimerStartCommand.RaiseCanExecuteChanged();
-                        TimerStopCommand.RaiseCanExecuteChanged();
-                    },
-                    _ => !_isCountUpTimerRunning);
-            }
-        }
-
-        // タイマーストップコマンド
-        private DelegateCommand? _timerStopCommand;
-        public DelegateCommand TimerStopCommand
-        {
-            get
-            {
-                return _timerStopCommand ??= new DelegateCommand(
-                    _ =>
-                    {
-                        _isCountUpTimerRunning = false;
-                        TimerStartCommand.RaiseCanExecuteChanged();
-                        TimerStopCommand.RaiseCanExecuteChanged();
-                    },
-                    _ => _isCountUpTimerRunning);
-            }
-        }
-
-        // タイマー更新
-        private void UpdateCountUpTimer()
-        {
-            if (_isCountUpTimerRunning)
-            {
-                _elapsedTime += TimeSpan.FromSeconds(1);
-                CountUpTimerText = _elapsedTime.ToString(@"hh\:mm\:ss");
-            }
-        }
-
-        #endregion
 
     }
 }
