@@ -81,6 +81,27 @@
                     <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result, Mode=OneWay}" IsReadOnly="True" Margin="2" />
                 </Grid>
             </TabItem>
+            <!--割り算タブ-->
+            <TabItem Header="設定">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 常に最前面 -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="常に最前面にする" TextAlignment="Left" VerticalAlignment="Center" Margin="2"/>
+                    <Button Grid.Row="0" Grid.Column="1" Content="ON" Command="{Binding EnableAlwaysOnTopCommand}" Width="40" Margin="2" />
+                    <Button Grid.Row="0" Grid.Column="2" Content="OFF" Command="{Binding DisableAlwaysOnTopCommand}" Width="40" Margin="2" />
+                </Grid>
+            </TabItem>
         </TabControl>
     </DockPanel>
 

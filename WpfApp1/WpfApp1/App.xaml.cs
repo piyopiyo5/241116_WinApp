@@ -15,7 +15,7 @@ namespace WpfApp1
         {
             base.OnStartup(e);
             var w = new MainView();
-            var vm = new MainViewModel();
+            var vm = new MainViewModel(w);
             w.DataContext = vm;
             w.Show();
         }

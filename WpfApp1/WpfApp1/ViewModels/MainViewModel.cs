@@ -7,6 +7,7 @@ using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 using WpfApp1.Models;
 
@@ -26,8 +27,13 @@ namespace WpfApp1.ViewModels
     /// </summary>
     internal class MainViewModel : NotificationObject
     {
-        public MainViewModel()
+        private Window _window;
+
+        public MainViewModel(Window window)
         {
+            // ウィンドウを保持する
+            _window = window;
+
             // Calculatorクラスのインスタンスを生成する
             _calc = new Calculator();
 
@@ -230,6 +236,53 @@ namespace WpfApp1.ViewModels
         // 複数のタイマーを管理するObservableCollection
         public ObservableCollection<CountUpTimer> CountUpTimers { get; }
 
+        #endregion
+
+        #region 設定のコード
+        private bool _isAlwaysOnTop = true;
+
+        // AlwaysOnTopの有効化
+        private DelegateCommand? _enableAlwaysOnTop;
+        public DelegateCommand EnableAlwaysOnTopCommand
+        {
+            get
+            {
+                return _enableAlwaysOnTop ??= new DelegateCommand(
+                    _ =>
+                    {
+                        _window.Topmost = true;
+                        _isAlwaysOnTop = true;
+                        UpdateAlwaysOnTopCommand();
+                    },
+                    _ => !_isAlwaysOnTop
+                    );
+            }
+        }
+
+        // AlwaysOnTopの無効化
+        private DelegateCommand? _disableAlwaysOnTop;
+        public DelegateCommand DisableAlwaysOnTopCommand
+        {
+            get
+            {
+                return _disableAlwaysOnTop ??= new DelegateCommand(
+                    _ =>
+                    {
+                        _window.Topmost = false;
+                        _isAlwaysOnTop = false;
+                        UpdateAlwaysOnTopCommand();
+                    },
+                    _ => _isAlwaysOnTop
+                    );
+            }
+        }
+
+        // コマンドの状態を更新する
+        private void UpdateAlwaysOnTopCommand()
+        {
+            EnableAlwaysOnTopCommand.RaiseCanExecuteChanged();
+            DisableAlwaysOnTopCommand.RaiseCanExecuteChanged();
+        }
         #endregion
     }
 
