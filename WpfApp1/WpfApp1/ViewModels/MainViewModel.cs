@@ -184,6 +184,7 @@ namespace WpfApp1.ViewModels
         private void Timer_Tick(object? sender, EventArgs e)
         {
             UpdateClock();
+            UpdateCountUpTimer();
         }
 
         // 時計表示を更新する
@@ -191,7 +192,65 @@ namespace WpfApp1.ViewModels
         {
             ClockText = DateTime.Now.ToString("HH:mm:ss");
         }
+        #endregion
+
+        #region カウントアップタイマーのコード
+
+        private TimeSpan _elapsedTime = TimeSpan.Zero;
+        private bool _isCountUpTimerRunning = false;
+
+        private string _countUpTimerText = "00:00:00";
+        public string CountUpTimerText
+        {
+            get { return _countUpTimerText; }
+            private set { SetProperty(ref _countUpTimerText, value); }
+        }
+
+        // タイマースタートコマンド
+        private DelegateCommand? _timerStartCommand;
+        public DelegateCommand TimerStartCommand
+        {
+            get
+            {
+                return _timerStartCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        _isCountUpTimerRunning = true;
+                        TimerStartCommand.RaiseCanExecuteChanged();
+                        TimerStopCommand.RaiseCanExecuteChanged();
+                    },
+                    _ => !_isCountUpTimerRunning);
+            }
+        }
+
+        // タイマーストップコマンド
+        private DelegateCommand? _timerStopCommand;
+        public DelegateCommand TimerStopCommand
+        {
+            get
+            {
+                return _timerStopCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        _isCountUpTimerRunning = false;
+                        TimerStartCommand.RaiseCanExecuteChanged();
+                        TimerStopCommand.RaiseCanExecuteChanged();
+                    },
+                    _ => _isCountUpTimerRunning);
+            }
+        }
+
+        // タイマー更新
+        private void UpdateCountUpTimer()
+        {
+            if (_isCountUpTimerRunning)
+            {
+                _elapsedTime += TimeSpan.FromSeconds(1);
+                CountUpTimerText = _elapsedTime.ToString(@"hh\:mm\:ss");
+            }
+        }
 
         #endregion
+
     }
 }

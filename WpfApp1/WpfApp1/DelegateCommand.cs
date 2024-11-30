@@ -39,10 +39,10 @@ namespace WpfApp1
         {
             if (CanExecuteChanged != null)
             {
-                if (parameter == null)
-                {
-                    throw new ArgumentNullException(nameof(parameter), "Parameter cannot be null.");
-                }
+                //if (parameter == null)
+                //{
+                //    throw new ArgumentNullException(nameof(parameter), "Parameter cannot be null.");
+                //}
                 _execute(parameter);
             }
         }

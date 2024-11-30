@@ -40,6 +40,11 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
+                    <!--テキストボックスとボタン-->
+                    <TextBox Grid.Row="0" Grid.Column="0" Text="" Margin="2"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CountUpTimerText, UpdateSourceTrigger=PropertyChanged}" Margin="2"/>
+                    <Button Grid.Row="0" Grid.Column="2" Content="開始" Command="{Binding TimerStartCommand}" Margin="2"/>
+                    <Button Grid.Row="0" Grid.Column="3" Content="停止" Command="{Binding TimerStopCommand}" Margin="2"/>
                 </Grid>
             </TabItem>
             <!--割り算タブ-->
