@@ -49,7 +49,7 @@ namespace WpfApp1.ViewModels
             CountUpTimers = new ObservableCollection<CountUpTimer>();
             for (int i = 0; i < Const.CountUpTimerMax; i++)
             {
-                CountUpTimers.Add(new CountUpTimer());
+                CountUpTimers.Add(new CountUpTimer("タイマー" + Convert.ToString(i)));
             }
 
             // 各タイマーに他のタイマーのリストを設定する
@@ -293,6 +293,20 @@ namespace WpfApp1.ViewModels
     {
         private TimeSpan _elapsedTime = TimeSpan.Zero; // 経過時間
         private bool _isCountUpTimerRunning = false; // カウントアップタイマーが動作中かどうか
+
+        public CountUpTimer(string TimerName)
+        {
+            // タイマー名を設定
+            _countUpTimerName = TimerName;
+        }
+
+        // カウントアップタイマーの名前
+        private string _countUpTimerName;
+        public string CountUpTimerName
+        {
+            get { return _countUpTimerName; }
+            set { SetProperty(ref _countUpTimerName, value); }
+        }
 
         // カウントアップタイマーの表示文字列
         private string _countUpTimerText = "00:00:00";
