@@ -53,10 +53,7 @@ namespace WpfApp1.ViewModels
             }
 
             // 各タイマーに他のタイマーのリストを設定する
-            foreach (var timer in CountUpTimers)
-            {
-                timer.OtherTimers = CountUpTimers.Where(t => t != timer).ToList();
-            }
+            UpdateOtherTimers();
 
             // 先頭のタイマーをスタートする
             CountUpTimers[0].StartTimer();
@@ -282,6 +279,32 @@ namespace WpfApp1.ViewModels
         {
             EnableAlwaysOnTopCommand.RaiseCanExecuteChanged();
             DisableAlwaysOnTopCommand.RaiseCanExecuteChanged();
+        }
+
+        // カウントアップタイマーを追加
+        private DelegateCommand? _addCountUpTimerCommand;
+        public DelegateCommand AddCountUpTimerCommand
+        {
+            get
+            {
+                return _addCountUpTimerCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        // カウントアップタイマーの追加
+                        CountUpTimers.Add(new CountUpTimer("タイマー" + Convert.ToString(CountUpTimers.Count)));
+                        UpdateOtherTimers();
+                    },
+                    _ => true);
+            }
+        }
+
+        // OtherTimersを更新する
+        private void UpdateOtherTimers()
+        {
+            foreach (var timer in CountUpTimers)
+            {
+                timer.OtherTimers = CountUpTimers.Where(t => t != timer).ToList();
+            }
         }
         #endregion
     }
