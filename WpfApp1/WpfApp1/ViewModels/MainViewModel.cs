@@ -220,6 +220,11 @@ namespace WpfApp1.ViewModels
             {
                 timer.UpdateCountUpTimer();
             }
+            if (IsCountUpTimerRunning())
+            {
+                _totalEelapsedTime += TimeSpan.FromSeconds(1);
+                TotalCountUpTimerText = _totalEelapsedTime.ToString(@"hh\:mm\:ss");
+            }
         }
 
         // 時計表示を更新する
@@ -233,6 +238,15 @@ namespace WpfApp1.ViewModels
 
         // 複数のタイマーを管理するObservableCollection
         public ObservableCollection<CountUpTimer> CountUpTimers { get; }
+
+        // タイマーの合計時間
+        private TimeSpan _totalEelapsedTime = TimeSpan.Zero; // 経過時間
+        private string _totalCountUpTimerText = "00:00:00";
+        public string TotalCountUpTimerText
+        {
+            get { return "Total: " + _totalCountUpTimerText; }
+            private set { SetProperty(ref _totalCountUpTimerText, value); }
+        }
 
         #endregion
 
@@ -307,6 +321,13 @@ namespace WpfApp1.ViewModels
                 timer.OtherTimers = CountUpTimers.Where(t => t != timer).ToList();
             }
         }
+
+        // 動作中のカウントアップタイマーがあるかどうか
+        private bool IsCountUpTimerRunning()
+        {
+            return CountUpTimers.Any(timer => timer._isCountUpTimerRunning);
+        }
+
         #endregion
     }
 
@@ -316,7 +337,7 @@ namespace WpfApp1.ViewModels
     internal class CountUpTimer : NotificationObject
     {
         private TimeSpan _elapsedTime = TimeSpan.Zero; // 経過時間
-        private bool _isCountUpTimerRunning = false; // カウントアップタイマーが動作中かどうか
+        public bool _isCountUpTimerRunning = false; // カウントアップタイマーが動作中かどうか
 
         public CountUpTimer(string TimerName)
         {

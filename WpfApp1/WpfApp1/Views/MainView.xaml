@@ -27,8 +27,10 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ListBox Grid.Row="0" DockPanel.Dock="Top" ItemsSource="{Binding CountUpTimers}">
+                    <TextBlock Grid.Row="0" Text="{Binding TotalCountUpTimerText,UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+                    <ListBox Grid.Row="1" DockPanel.Dock="Top" ItemsSource="{Binding CountUpTimers}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -39,8 +41,8 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="130" />
-                                        <ColumnDefinition Width="70" />
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="60" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
@@ -49,7 +51,7 @@
                                          Text="{Binding CountUpTimerName, UpdateSourceTrigger=PropertyChanged}" 
                                          VerticalAlignment="Center" Margin="2" />
                                     <!-- カウントアップタイマー -->
-                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CountUpTimerText, Mode=OneWay}" IsReadOnly="True" Margin="2" />
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CountUpTimerText, Mode=OneWay}"  TextAlignment="Center" IsReadOnly="True" Margin="2" />
                                     <!-- 開始ボタン -->
                                     <Button Grid.Row="0" Grid.Column="2" Content="開始" Command="{Binding TimerStartCommand}" Width="40" Margin="2" />
                                     <!-- 停止ボタン -->
@@ -58,7 +60,7 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Button Grid.Row="1" Content="タイマー追加" Command="{Binding AddCountUpTimerCommand}" Margin="2" />
+                    <Button Grid.Row="2" Content="タイマー追加" Command="{Binding AddCountUpTimerCommand}" Margin="2" />
                 </Grid>
             </TabItem>
             <!--割り算タブ-->
