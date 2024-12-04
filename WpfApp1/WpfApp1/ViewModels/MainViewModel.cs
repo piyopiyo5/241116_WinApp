@@ -33,6 +33,7 @@ namespace WpfApp1.ViewModels
         {
             // ウィンドウを保持する
             _window = window;
+            _window.Topmost = true;
 
             // Calculatorクラスのインスタンスを生成する
             _calc = new Calculator();
