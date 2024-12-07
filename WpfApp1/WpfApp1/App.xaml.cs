@@ -1,4 +1,8 @@
-﻿using System.Configuration;
+﻿// ------------------------------------------------------------------
+// App.xaml.cs
+// ------------------------------------------------------------------
+
+using System.Configuration;
 using System.Data;
 using System.Windows;
 using WpfApp1.ViewModels;
