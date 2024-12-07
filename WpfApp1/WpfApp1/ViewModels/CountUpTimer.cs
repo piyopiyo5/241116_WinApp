@@ -90,6 +90,7 @@ namespace WpfApp1.ViewModels
         {
             _isCountUpTimerRunning = true;
             UpdateCommandStates();
+            BackgroundColor = "LightBlue";
         }
 
         // タイマー停止
@@ -97,6 +98,7 @@ namespace WpfApp1.ViewModels
         {
             _isCountUpTimerRunning = false;
             UpdateCommandStates();
+            BackgroundColor = "White";
         }
 
         // タイマー表示更新
@@ -114,6 +116,14 @@ namespace WpfApp1.ViewModels
         {
             TimerStartCommand.RaiseCanExecuteChanged();
             TimerStopCommand.RaiseCanExecuteChanged();
+        }
+
+        // タイマーの背景色
+        private string _backgroundColor = "White";
+        public string BackgroundColor
+        {
+            get { return _backgroundColor; }
+            set { SetProperty(ref _backgroundColor, value); }
         }
     }
 }
