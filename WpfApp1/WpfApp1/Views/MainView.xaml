@@ -43,21 +43,25 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="140" />
                                         <ColumnDefinition Width="60" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
+                                    <!-- 削除ボタン -->
+                                    <Button Grid.Row="0" Grid.Column="0" Content="削除" Command="{Binding DataContext.RemoveTimerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="40" Margin="2" />
                                     <!-- ユーザーが編集可能なタイマー名 -->
-                                    <TextBox Grid.Row="0" Grid.Column="0" 
+                                    <TextBox Grid.Row="0" Grid.Column="1" 
                                          Text="{Binding CountUpTimerName, UpdateSourceTrigger=PropertyChanged}" 
                                          VerticalAlignment="Center" Margin="2" />
                                     <!-- カウントアップタイマー -->
-                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CountUpTimerText, Mode=OneWay}"  TextAlignment="Center" IsReadOnly="True" Margin="2" />
+                                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding CountUpTimerText, Mode=OneWay}"  TextAlignment="Center" IsReadOnly="True" Margin="2" />
                                     <!-- 開始ボタン -->
-                                    <Button Grid.Row="0" Grid.Column="2" Content="開始" Command="{Binding TimerStartCommand}" Width="40" Margin="2" />
+                                    <Button Grid.Row="0" Grid.Column="3" Content="開始" Command="{Binding TimerStartCommand}" Width="40" Margin="2" />
                                     <!-- 停止ボタン -->
-                                    <Button Grid.Row="0" Grid.Column="3" Content="停止" Command="{Binding TimerStopCommand}" Width="40" Margin="2" />
+                                    <Button Grid.Row="0" Grid.Column="4" Content="停止" Command="{Binding TimerStopCommand}" Width="40" Margin="2" />
+
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

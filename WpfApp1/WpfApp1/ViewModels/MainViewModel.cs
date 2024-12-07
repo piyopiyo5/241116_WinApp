@@ -156,6 +156,27 @@ namespace WpfApp1.ViewModels
             }
         }
 
+        private DelegateCommand? _removeTimerCommand;
+        public DelegateCommand RemoveTimerCommand
+        {
+            get
+            {
+                return _removeTimerCommand ??= new DelegateCommand(
+                    parameter =>
+                    {
+                        // 引数として渡されたタイマーを削除
+                        var timerToRemove = parameter as CountUpTimer;
+                        if (timerToRemove != null)
+                        {
+                            CountUpTimers.Remove(timerToRemove);
+                            UpdateOtherTimers();
+                        }
+                    },
+                    parameter => parameter is CountUpTimer // 引数がCountUpTimerの場合にのみ実行可能
+                );
+            }
+        }
+
         // OtherTimersを更新する
         private void UpdateOtherTimers()
         {
