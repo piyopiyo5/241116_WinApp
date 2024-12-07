@@ -10,6 +10,7 @@ using System.Linq;
 using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -49,19 +50,9 @@ namespace WpfApp1.ViewModels
             };
             _timer.Tick += Timer_Tick;
             _timer.Start();
-
+            
             // カウントアップタイマーのリストを生成する
             CountUpTimers = new ObservableCollection<CountUpTimer>();
-            for (int i = 0; i < Const.CountUpTimerMax; i++)
-            {
-                CountUpTimers.Add(new CountUpTimer("タイマー" + Convert.ToString(i)));
-            }
-
-            // 各タイマーに他のタイマーのリストを設定する
-            UpdateOtherTimers();
-
-            // 先頭のタイマーをスタートする
-            CountUpTimers[0].StartTimer();
         }
 
         #region 3章のコード
@@ -332,6 +323,101 @@ namespace WpfApp1.ViewModels
             return CountUpTimers.Any(timer => timer._isCountUpTimerRunning);
         }
 
+        #endregion
+
+
+
+        #region 保存と読み込みのコード
+        // アプリ状態を保存
+        public void SaveAppState()
+        {
+            try
+            {
+                var timersData = CountUpTimers.Select(t => new
+                {
+                    t.CountUpTimerName,
+                    t.CountUpTimerText
+                }).ToList();
+
+                var appState = new
+                {
+                    Timers = timersData,
+                    TimerCount = CountUpTimers.Count // タイマー数を保存
+                };
+
+                var json = JsonSerializer.Serialize(appState, new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping // 非ASCII文字をエスケープしない
+                });
+
+                // 保存ファイルパスを指定
+                System.IO.File.WriteAllText("appState.json", json);
+            }
+            catch (Exception ex)
+            {
+                // エラー時のログや通知を実行（デバッグ出力として記録）
+                System.Diagnostics.Debug.WriteLine($"アプリ状態の保存中にエラーが発生しました: {ex.Message}");
+            }
+        }
+
+        // アプリ状態を読み込み
+        public void LoadAppState()
+        {
+            try
+            {
+                // 保存されたアプリ状態のファイルが存在するか確認
+                if (System.IO.File.Exists("appState.json"))
+                {
+                    var json = System.IO.File.ReadAllText("appState.json");
+                    var appState = JsonSerializer.Deserialize<AppState>(json);
+
+                    if (appState != null)
+                    {
+                        // タイマーを復元
+                        for (int i = 0; i < appState.TimerCount; i++)
+                        {
+                            // 保存されたタイマー情報を基にタイマーを復元
+                            var timerData = appState.Timers[i];
+                            if (timerData != null)
+                            {
+                                var newTimer = new CountUpTimer(timerData.CountUpTimerName);
+                                CountUpTimers.Add(newTimer);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // タイマーを一つ追加
+                    CountUpTimers.Add(new CountUpTimer("タイマー0"));
+                }
+
+                // 各タイマーに他のタイマーのリストを設定する
+                UpdateOtherTimers();
+
+                // 先頭のタイマーをスタートする
+                CountUpTimers[0].StartTimer();
+            }
+            catch (Exception ex)
+            {
+                // エラー時のログや通知を実行（デバッグ出力として記録）
+                System.Diagnostics.Debug.WriteLine($"アプリ状態の読み込み中にエラーが発生しました: {ex.Message}");
+            }
+        }
+
+        // 状態保持用のクラス
+        public class AppState
+        {
+            public List<TimerData> Timers { get; set; }
+            public int TimerCount { get; set; }
+        }
+
+        public class TimerData
+        {
+            public string CountUpTimerName { get; set; }
+            public string CountUpTimerText { get; set; }
+        }
         #endregion
     }
 
