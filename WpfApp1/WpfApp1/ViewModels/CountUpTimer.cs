@@ -107,8 +107,8 @@ namespace WpfApp1.ViewModels
             if (_isCountUpTimerRunning)
             {
                 _elapsedTime += TimeSpan.FromSeconds(1);
-                CountUpTimerText = _elapsedTime.ToString(@"hh\:mm\:ss");
             }
+            CountUpTimerText = _elapsedTime.ToString(@"hh\:mm\:ss");
         }
 
         // コマンドの状態を更新する

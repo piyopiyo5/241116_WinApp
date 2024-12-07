@@ -211,18 +211,43 @@ namespace WpfApp1.ViewModels
         {
             try
             {
+                // 現在の日付をキーとして保存する
+                string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+                //string currentDate = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
+
+                // タイマーのデータをリストとして取得
                 var timersData = CountUpTimers.Select(t => new
                 {
                     t.CountUpTimerName,
                     t.CountUpTimerText
                 }).ToList();
 
-                var appState = new
+                // 保存用の階層構造データ
+                var appState = new Dictionary<string, object>();
+
+                // 過去のデータを読み込む
+                if (System.IO.File.Exists("data.json"))
                 {
-                    Timers = timersData,
-                    TimerCount = CountUpTimers.Count // タイマー数を保存
+                    string existingJson = System.IO.File.ReadAllText("data.json");
+                    var existingState = JsonSerializer.Deserialize<Dictionary<string, object>>(existingJson);
+
+                    if (existingState != null)
+                    {
+                        foreach (var entry in existingState)
+                        {
+                            appState[entry.Key] = entry.Value;
+                        }
+                    }
+                }
+
+                // 現在の日付のデータを追加または更新
+                appState[currentDate] = new
+                {
+                    TimerCount = CountUpTimers.Count, // タイマー数を保存
+                    Timers = timersData
                 };
 
+                // JSON 形式で保存
                 var json = JsonSerializer.Serialize(appState, new JsonSerializerOptions
                 {
                     WriteIndented = true,
@@ -230,7 +255,7 @@ namespace WpfApp1.ViewModels
                 });
 
                 // 保存ファイルパスを指定
-                System.IO.File.WriteAllText("appState.json", json);
+                System.IO.File.WriteAllText("data.json", json);
             }
             catch (Exception ex)
             {
@@ -239,35 +264,51 @@ namespace WpfApp1.ViewModels
             }
         }
 
+
         // アプリ状態を読み込み
         public void LoadAppState()
         {
             try
             {
                 // 保存されたアプリ状態のファイルが存在するか確認
-                if (System.IO.File.Exists("appState.json"))
+                if (System.IO.File.Exists("data.json"))
                 {
-                    var json = System.IO.File.ReadAllText("appState.json");
-                    var appState = JsonSerializer.Deserialize<AppState>(json);
+                    var json = System.IO.File.ReadAllText("data.json");
 
-                    if (appState != null)
+                    // JSON データを日付ごとの辞書として読み込む
+                    var appState = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+                    if (appState != null && appState.Any())
                     {
-                        // タイマーを復元
-                        for (int i = 0; i < appState.TimerCount; i++)
+                        // 最も新しい日付を取得
+                        var latestDate = appState.Keys.Max();
+
+                        // 最新データを取得
+                        var latestDataJson = appState[latestDate]?.ToString();
+                        if (!string.IsNullOrEmpty(latestDataJson))
                         {
-                            // 保存されたタイマー情報を基にタイマーを復元
-                            var timerData = appState.Timers[i];
-                            if (timerData != null)
+                            var latestData = JsonSerializer.Deserialize<LatestAppState>(latestDataJson);
+                            if (latestData != null)
                             {
-                                var newTimer = new CountUpTimer(timerData.CountUpTimerName);
-                                CountUpTimers.Add(newTimer);
+                                // タイマーを復元
+                                foreach (var timerData in latestData.Timers)
+                                {
+                                    var newTimer = new CountUpTimer(timerData.CountUpTimerName);
+                                    // 日付が今日なら経過時間も復元
+                                    if (latestDate == DateTime.Now.ToString("yyyy-MM-dd"))
+                                    {
+                                        newTimer.ElapsedTime = TimeSpan.Parse(timerData.CountUpTimerText);
+                                        newTimer.UpdateCountUpTimer();
+                                    }
+                                    CountUpTimers.Add(newTimer);
+                                }
                             }
                         }
                     }
                 }
                 else
                 {
-                    // タイマーを一つ追加
+                    // ファイルがない場合、タイマーを一つ追加
                     CountUpTimers.Add(new CountUpTimer("タイマー0"));
                 }
 
@@ -275,7 +316,10 @@ namespace WpfApp1.ViewModels
                 UpdateOtherTimers();
 
                 // 先頭のタイマーをスタートする
-                CountUpTimers[0].StartTimer();
+                if (CountUpTimers.Count > 0)
+                {
+                    CountUpTimers[0].StartTimer();
+                }
             }
             catch (Exception ex)
             {
@@ -295,6 +339,12 @@ namespace WpfApp1.ViewModels
         {
             public string CountUpTimerName { get; set; }
             public string CountUpTimerText { get; set; }
+        }
+
+        public class LatestAppState
+        {
+            public int TimerCount { get; set; }
+            public List<TimerData> Timers { get; set; } = new();
         }
         #endregion
     }
