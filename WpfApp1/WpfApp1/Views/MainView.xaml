@@ -63,6 +63,7 @@
                     <Button Grid.Row="2" Content="タイマー追加" Command="{Binding AddCountUpTimerCommand}" Margin="2" />
                 </Grid>
             </TabItem>
+            
             <!--割り算タブ-->
             <TabItem Header="割り算">
                 <Grid>
@@ -86,7 +87,25 @@
                     <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result, Mode=OneWay}" IsReadOnly="True" Margin="2" />
                 </Grid>
             </TabItem>
-            <!--割り算タブ-->
+            
+            <!--カレンダータブ-->
+            <TabItem Header="カレンダー">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Calendar Grid.Row="0" Name="myCalendar" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Calendar.CalendarDayButtonStyle>
+                            <Style TargetType="CalendarDayButton">
+                                <Setter Property="FontSize" Value="16"/>
+                            </Style>
+                        </Calendar.CalendarDayButtonStyle>
+                    </Calendar>
+                </Grid>
+            </TabItem>
+            
+            <!--設定タブ-->
             <TabItem Header="設定">
                 <Grid>
                     <Grid.RowDefinitions>
