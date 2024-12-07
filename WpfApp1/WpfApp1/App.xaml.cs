@@ -18,7 +18,7 @@ namespace WpfApp1
     /// </summary>
     public partial class App : Application
     {
-        MainViewModel _mainViewModel;
+        MainViewModel? _mainViewModel;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -41,7 +41,7 @@ namespace WpfApp1
             base.OnExit(e);
 
             // アプリ終了時に保存処理を実行
-            _mainViewModel.SaveAppState();
+            _mainViewModel?.SaveAppState();
         }
     }
 }

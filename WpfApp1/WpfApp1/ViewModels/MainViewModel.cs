@@ -38,7 +38,7 @@ namespace WpfApp1.ViewModels
             };
             _timer.Tick += Timer_Tick;
             _timer.Start();
-            
+
             // カウントアップタイマーのリストを生成する
             CountUpTimers = new ObservableCollection<CountUpTimer>();
         }
@@ -213,7 +213,6 @@ namespace WpfApp1.ViewModels
             {
                 // 現在の日付をキーとして保存する
                 string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
-                //string currentDate = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
 
                 // タイマーのデータをリストとして取得
                 var timersData = CountUpTimers.Select(t => new
@@ -283,6 +282,11 @@ namespace WpfApp1.ViewModels
                         // 最も新しい日付を取得
                         var latestDate = appState.Keys.Max();
 
+                        if (latestDate == null)
+                        {
+                            return;
+                        }
+
                         // 最新データを取得
                         var latestDataJson = appState[latestDate]?.ToString();
                         if (!string.IsNullOrEmpty(latestDataJson))
@@ -297,7 +301,7 @@ namespace WpfApp1.ViewModels
                                     // 日付が今日なら経過時間も復元
                                     if (latestDate == DateTime.Now.ToString("yyyy-MM-dd"))
                                     {
-                                        newTimer.ElapsedTime = TimeSpan.Parse(timerData.CountUpTimerText);
+                                        newTimer.ElapsedTime = string.IsNullOrEmpty(timerData.CountUpTimerText) ? TimeSpan.Zero : TimeSpan.Parse(timerData.CountUpTimerText);
                                         newTimer.UpdateCountUpTimer();
                                     }
                                     CountUpTimers.Add(newTimer);
@@ -331,14 +335,14 @@ namespace WpfApp1.ViewModels
         // 状態保持用のクラス
         public class AppState
         {
-            public List<TimerData> Timers { get; set; }
+            public List<TimerData>? Timers { get; set; }
             public int TimerCount { get; set; }
         }
 
         public class TimerData
         {
-            public string CountUpTimerName { get; set; }
-            public string CountUpTimerText { get; set; }
+            public string? CountUpTimerName { get; set; }
+            public string? CountUpTimerText { get; set; }
         }
 
         public class LatestAppState

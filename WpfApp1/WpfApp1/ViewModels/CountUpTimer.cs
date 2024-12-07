@@ -23,10 +23,10 @@ namespace WpfApp1.ViewModels
 
         public bool _isCountUpTimerRunning = false; // カウントアップタイマーが動作中かどうか
 
-        public CountUpTimer(string TimerName)
+        public CountUpTimer(string? TimerName)
         {
-            // タイマー名を設定
-            _countUpTimerName = TimerName;
+            // 引数が null または空文字の場合にデフォルト名を設定
+            _countUpTimerName = string.IsNullOrEmpty(TimerName) ? "タイマー" : TimerName;
         }
 
         // カウントアップタイマーの名前
