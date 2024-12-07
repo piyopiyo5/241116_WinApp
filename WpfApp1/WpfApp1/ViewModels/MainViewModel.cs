@@ -62,17 +62,25 @@ namespace WpfApp1.ViewModels
             {
                 timer.UpdateCountUpTimer();
             }
-            if (IsCountUpTimerRunning())
-            {
-                _totalEelapsedTime += TimeSpan.FromSeconds(1);
-                TotalCountUpTimerText = _totalEelapsedTime.ToString(@"hh\:mm\:ss");
-            }
+
+            UpdateTotalCountUpTimer();
         }
 
         // 時計表示を更新する
         private void UpdateClock()
         {
             ClockText = DateTime.Now.ToString("HH:mm:ss");
+        }
+
+        // 合計時間を更新する
+        private void UpdateTotalCountUpTimer()
+        {
+            _totalEelapsedTime = TimeSpan.Zero;
+            foreach (var timer in CountUpTimers)
+            {
+                _totalEelapsedTime += timer.ElapsedTime;
+            }
+            TotalCountUpTimerText = _totalEelapsedTime.ToString(@"hh\:mm\:ss");
         }
         #endregion
 
@@ -156,6 +164,7 @@ namespace WpfApp1.ViewModels
             }
         }
 
+        // カウントアップタイマーを削除
         private DelegateCommand? _removeTimerCommand;
         public DelegateCommand RemoveTimerCommand
         {
@@ -170,6 +179,7 @@ namespace WpfApp1.ViewModels
                         {
                             CountUpTimers.Remove(timerToRemove);
                             UpdateOtherTimers();
+                            UpdateTotalCountUpTimer();
                         }
                     },
                     parameter => parameter is CountUpTimer // 引数がCountUpTimerの場合にのみ実行可能

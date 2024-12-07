@@ -15,6 +15,12 @@ namespace WpfApp1.ViewModels
     internal class CountUpTimer : NotificationObject
     {
         private TimeSpan _elapsedTime = TimeSpan.Zero; // 経過時間
+        public TimeSpan ElapsedTime
+        {
+            get { return _elapsedTime; }
+            set { SetProperty(ref _elapsedTime, value); }
+        }
+
         public bool _isCountUpTimerRunning = false; // カウントアップタイマーが動作中かどうか
 
         public CountUpTimer(string TimerName)
