@@ -362,7 +362,7 @@ namespace WpfApp1.ViewModels
         public string CountUpTimerText
         {
             get { return _countUpTimerText; }
-            private set { SetProperty(ref _countUpTimerText, value); }
+            set { SetProperty(ref _countUpTimerText, value); }
         }
 
         // 他のタイマーの参照リスト
