@@ -32,6 +32,7 @@ namespace WpfApp1
 
             // アプリ状態をロード
             _mainViewModel.LoadAppState();
+            _mainViewModel.LoadAppSettings();
 
             w.Show();
         }
@@ -41,7 +42,8 @@ namespace WpfApp1
             base.OnExit(e);
 
             // アプリ終了時に保存処理を実行
-            _mainViewModel?.SaveAppState();
+            _mainViewModel?.SaveAppData();
+            _mainViewModel?.SaveAppSettings();
         }
     }
 }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Printing;
 using System.Runtime.CompilerServices;
@@ -281,8 +282,8 @@ namespace WpfApp1.ViewModels
 
         #region 保存と読み込みのコード
         // -----------------------------------------------------------------------------------------------------------------------
-        // アプリ状態を保存
-        public void SaveAppState()
+        // アプリデータを保存
+        public void SaveAppData()
         {
             try
             {
@@ -339,7 +340,7 @@ namespace WpfApp1.ViewModels
         }
 
 
-        // アプリ状態を読み込み
+        // アプリデータを読み込み
         public void LoadAppState()
         {
             try
@@ -424,6 +425,79 @@ namespace WpfApp1.ViewModels
         {
             public int TimerCount { get; set; }
             public List<TimerData> Timers { get; set; } = new();
+        }
+
+        // アプリ設定を保存
+        public void SaveAppSettings()
+        {
+            try
+            {
+                // 保存用の階層構造データ
+                var appSettings = new Dictionary<string, object>
+                {
+                    { "AlwaysOnTop", _isAlwaysOnTop },
+                    { "NumLockKeep", _isNumLockKeep }
+                };
+
+                // JSON 形式で保存
+                var json = JsonSerializer.Serialize(appSettings, new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping // 非ASCII文字をエスケープしない
+                });
+
+                // 保存ファイルパスを指定
+                System.IO.File.WriteAllText("settings.json", json);
+            }
+            catch (Exception ex)
+            {
+                // エラー時のログや通知を実行（デバッグ出力として記録）
+                System.Diagnostics.Debug.WriteLine($"アプリ設定の保存中にエラーが発生しました: {ex.Message}");
+            }
+        }
+
+        // アプリ設定を読み込み
+        public void LoadAppSettings()
+        {
+            try
+            {
+                // 設定ファイルが存在するか確認
+                if (File.Exists("settings.json"))
+                {
+                    var json = File.ReadAllText("settings.json");
+
+                    // JSON データをオブジェクトに変換
+                    var appSettings = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+
+                    if (appSettings != null)
+                    {
+                        // AlwaysOnTopの設定を読み込む
+                        if (appSettings.TryGetValue("AlwaysOnTop", out var alwaysOnTopElement) &&
+                            alwaysOnTopElement.ValueKind == JsonValueKind.True || alwaysOnTopElement.ValueKind == JsonValueKind.False)
+                        {
+                            _isAlwaysOnTop = alwaysOnTopElement.GetBoolean();
+                            _window.Topmost = _isAlwaysOnTop;
+                        }
+
+                        // NumLockKeepの設定を読み込む
+                        if (appSettings.TryGetValue("NumLockKeep", out var numLockKeepElement) &&
+                            numLockKeepElement.ValueKind == JsonValueKind.True || numLockKeepElement.ValueKind == JsonValueKind.False)
+                        {
+                            _isNumLockKeep = numLockKeepElement.GetBoolean();
+                        }
+
+                        UpdateNumlockCommand();
+                    }
+                }
+            }
+            catch (JsonException jsonEx)
+            {
+                System.Diagnostics.Debug.WriteLine($"JSON解析エラー: {jsonEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"アプリ設定の読み込み中にエラーが発生しました: {ex.Message}");
+            }
         }
         #endregion
     }
