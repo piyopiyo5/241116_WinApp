@@ -30,7 +30,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="{Binding TotalCountUpTimerText,UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" VerticalAlignment="Center" Margin="2"/>
+                    <TextBlock Grid.Row="0" Text="{Binding TotalCountUpTimerText,UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" VerticalAlignment="Top" Margin="0,-21,6,0"/>
                     <ListBox Grid.Row="1" DockPanel.Dock="Top" ItemsSource="{Binding CountUpTimers}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
