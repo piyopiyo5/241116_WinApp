@@ -108,6 +108,10 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="常に最前面にする" TextAlignment="Left" VerticalAlignment="Center" Margin="2"/>
                     <Button Grid.Row="0" Grid.Column="1" Content="ON" Command="{Binding EnableAlwaysOnTopCommand}" Width="40" Margin="2" />
                     <Button Grid.Row="0" Grid.Column="2" Content="OFF" Command="{Binding DisableAlwaysOnTopCommand}" Width="40" Margin="2" />
+                    <!-- NumLockKeeper -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="NumLockKeeper" TextAlignment="Left" VerticalAlignment="Center" Margin="2"/>
+                    <Button Grid.Row="1" Grid.Column="1" Content="ON" Command="{Binding EnableNumlockCommand}" Width="40" Margin="2" />
+                    <Button Grid.Row="1" Grid.Column="2" Content="OFF" Command="{Binding DisableNumlockCommand}" Width="40" Margin="2" />
                 </Grid>
             </TabItem>
         </TabControl>

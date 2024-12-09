@@ -9,10 +9,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Printing;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 using WpfApp1.Models;
 
@@ -64,6 +66,8 @@ namespace WpfApp1.ViewModels
             }
 
             UpdateTotalCountUpTimer();
+
+            EnableNumLock();
         }
 
         // 時計表示を更新する
@@ -103,6 +107,7 @@ namespace WpfApp1.ViewModels
         #region 設定のコード
         // -----------------------------------------------------------------------------------------------------------------------
         private bool _isAlwaysOnTop = true;
+        private bool _isNumLockKeep = true;
 
         // AlwaysOnTopの有効化
         private DelegateCommand? _enableAlwaysOnTop;
@@ -140,11 +145,81 @@ namespace WpfApp1.ViewModels
             }
         }
 
+        // NumlockKeepの有効化
+        private DelegateCommand? _enableNumlockCommand;
+        public DelegateCommand EnableNumlockCommand
+        {
+            get
+            {
+                return _enableNumlockCommand ??= new DelegateCommand(
+                    parameter =>
+                    {
+                        _isNumLockKeep = true;
+                        UpdateNumlockCommand();
+                    },
+                    _ => !_isNumLockKeep
+                    );
+
+            }
+        }
+
+        // NumlockKeepの無効化
+        private DelegateCommand? _disableNumlockCommand;
+        public DelegateCommand DisableNumlockCommand
+        {
+            get
+            {
+                return _disableNumlockCommand ??= new DelegateCommand(
+                    parameter =>
+                    {
+                        _isNumLockKeep = false;
+                        UpdateNumlockCommand();
+                    },
+                    _ => _isNumLockKeep
+                    );
+            }
+        }
+
+        // NumLock有効化
+        private void EnableNumLock()
+        {
+            if (_isNumLockKeep)
+            {
+                bool isNumLockOn = Keyboard.IsKeyToggled(Key.NumLock);
+
+                if (!isNumLockOn)
+                {
+                    ToggleNumLock();
+                }
+            }
+        }
+
+        private void ToggleNumLock()
+        {
+            // NumLockキーをシミュレート
+            keybd_event(VK_NUMLOCK, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
+            keybd_event(VK_NUMLOCK, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+        }
+
+        // Win32 APIのインポート
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
+
+        private const byte VK_NUMLOCK = 0x90; // NumLockキーの仮想キーコード
+        private const uint KEYEVENTF_EXTENDEDKEY = 0x0001; // 拡張キー
+        private const uint KEYEVENTF_KEYUP = 0x0002; // キーを離す
+
         // コマンドの状態を更新する
         private void UpdateAlwaysOnTopCommand()
         {
             EnableAlwaysOnTopCommand.RaiseCanExecuteChanged();
             DisableAlwaysOnTopCommand.RaiseCanExecuteChanged();
+        }
+
+        private void UpdateNumlockCommand()
+        {
+            EnableNumlockCommand.RaiseCanExecuteChanged();
+            DisableNumlockCommand.RaiseCanExecuteChanged();
         }
 
         // カウントアップタイマーを追加
