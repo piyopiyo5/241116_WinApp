@@ -44,6 +44,9 @@ namespace WpfApp1.ViewModels
 
             // カウントアップタイマーのリストを生成する
             CountUpTimers = new ObservableCollection<CountUpTimer>();
+
+            TaskTimeData = new ObservableCollection<DisplayRow>();
+            LoadTaskTimeData();
         }
 
         #region 時計表示のコード
@@ -104,6 +107,54 @@ namespace WpfApp1.ViewModels
         }
 
         #endregion
+
+
+        public ObservableCollection<DisplayRow> TaskTimeData { get; set; }
+        public class DisplayRow
+        {
+            public string Date { get; set; }
+            public string TaskName { get; set; }
+            public string TimeSpent { get; set; }
+        }
+
+        private void LoadTaskTimeData()
+        {
+            try
+            {
+                string jsonFilePath = "data.json"; // JSONファイルのパス
+                if (!File.Exists(jsonFilePath))
+                {
+                    // ファイルがない場合は空のリストを表示
+                    return;
+                }
+
+                string jsonData = File.ReadAllText(jsonFilePath);
+
+                // JSONをデシリアライズ
+                var dailyData = JsonSerializer.Deserialize<Dictionary<string, AppState>>(jsonData);
+
+                if (dailyData == null) return;
+
+                // データを変換してTaskTimeDataに追加
+                foreach (var dateEntry in dailyData)
+                {
+                    string date = dateEntry.Key;
+                    foreach (var timer in dateEntry.Value.Timers)
+                    {
+                        TaskTimeData.Add(new DisplayRow
+                        {
+                            Date = date,
+                            TaskName = timer.CountUpTimerName,
+                            TimeSpent = timer.CountUpTimerText
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // 必要に応じてエラーログを追加
+            }
+        }
 
         #region 設定のコード
         // -----------------------------------------------------------------------------------------------------------------------
