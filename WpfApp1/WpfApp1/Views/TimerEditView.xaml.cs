@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WpfApp1.ViewModels;
 
 namespace WpfApp1.Views
 {
@@ -19,9 +20,12 @@ namespace WpfApp1.Views
     /// </summary>
     public partial class TimerEditView : Window
     {
-        public TimerEditView()
+        internal TimerEditView(CountUpTimer countUpTimer)
         {
             InitializeComponent();
+
+            // モーダルウィンドウの DataContext に CountUpTimer を設定
+            DataContext = countUpTimer;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)

@@ -101,7 +101,7 @@ namespace WpfApp1.ViewModels
                         mainWindow.Topmost = false;
 
                         // モーダルウィンドウを開く
-                        TimerEditView editWindow = new TimerEditView();
+                        TimerEditView editWindow = new TimerEditView(this);
                         editWindow.ShowDialog();
 
                         // モーダルウィンドウを最前面に持ってくる
@@ -111,6 +111,41 @@ namespace WpfApp1.ViewModels
                         mainWindow.Topmost = true;
                     },
                     _ => !_isCountUpTimerRunning); // タイマー停止中に修正できる
+            }
+        }
+
+        // タイマーインクリメントコマンド
+        private DelegateCommand? _timerIncrementCommand;
+        public DelegateCommand TimerIncrementCommand
+        {
+            get
+            {
+                return _timerIncrementCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        // タイマーを10分インクリメントする
+                        _elapsedTime += TimeSpan.FromMinutes(10);
+                        UpdateCountUpTimer();
+                    },
+                    _ => true);
+            }
+        }
+
+        // タイマーディクリメントコマンド
+        private DelegateCommand? _timerDincrementCommand;
+        public DelegateCommand TimerDincrementCommand
+        {
+            get
+            {
+                return _timerDincrementCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        // タイマーを10分ディンクリメントする
+                        TimeSpan decrement = _elapsedTime - TimeSpan.FromMinutes(10);
+                        _elapsedTime = (decrement > TimeSpan.Zero) ? decrement : TimeSpan.Zero;
+                        UpdateCountUpTimer();
+                    },
+                    _ => true);
             }
         }
 
@@ -145,6 +180,7 @@ namespace WpfApp1.ViewModels
         {
             TimerStartCommand.RaiseCanExecuteChanged();
             TimerStopCommand.RaiseCanExecuteChanged();
+            TimerEditCommand.RaiseCanExecuteChanged();
         }
 
         // タイマーの背景色

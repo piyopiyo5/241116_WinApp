@@ -5,14 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1.Views"
         mc:Ignorable="d"
-        Title="TimerEditView" Height="450" Width="800">
+        Title="TimerEditView"
+        SizeToContent="WidthAndHeight">
     <Grid>
-        <!-- 編集用のコントロールをここに追加します -->
-        <TextBox Name="EditTextBox" Width="200" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" />
-       
-        <Button Content="保存" Width="100" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Center" Click="SaveButton_Click"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
         <!-- タイマーの経過時間を表示 -->
-        <TextBlock Text="{Binding CountUpTimerText}" 
-                   FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <TextBlock Grid.Row="0" Text="{Binding CountUpTimerText}" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <Button Grid.Row="1" Content="+10min" Command="{Binding TimerIncrementCommand}" Width="120" Height="30" Margin="2" />
+        <Button Grid.Row="2" Content="+10min" Command="{Binding TimerDincrementCommand}" Width="120" Height="30" Margin="2" />
+        <Button Grid.Row="3" Content="OK" Width="120" Height="30" Margin="10" Click="SaveButton_Click"/>
     </Grid>
 </Window>
