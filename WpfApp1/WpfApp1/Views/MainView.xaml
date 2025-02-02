@@ -130,6 +130,27 @@
                       Loaded="DataGrid_Loaded"/>
                 </Grid>
             </TabItem>
+
+            <!--業務分析タブ-->
+            <TabItem Header="業務分析" Tag="250,300">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="アクティブウィンドウのロギング" TextAlignment="Left" VerticalAlignment="Center" Margin="2"/>
+                    <Button Grid.Row="0" Grid.Column="1" Content="ON" Command="{Binding EnableActiveWindowLoggingCommand}" Width="40" Margin="2" />
+                    <Button Grid.Row="0" Grid.Column="2" Content="OFF" Command="{Binding DisableActiveWindowLoggingCommand}" Width="40" Margin="2" />
+                </Grid>
+            </TabItem>
         </TabControl>
     </DockPanel>
 
