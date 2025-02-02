@@ -53,5 +53,31 @@ namespace WpfApp1.Views
                 }
             }
         }
+
+        private void DataGrid_Loaded(object sender, RoutedEventArgs e)
+        {
+            var dataGrid = sender as DataGrid;
+
+            // 最初の列が存在する場合、降順にソートする
+            if (dataGrid != null && dataGrid.Columns.Count > 0)
+            {
+                // 最初の列（インデックス 0）を降順にソート
+                dataGrid.Sorting += (s, args) =>
+                {
+                    if (args.Column == dataGrid.Columns[0]) // 最初の列の場合
+                    {
+                        args.Handled = true;
+                        // 降順に設定
+                        dataGrid.Items.SortDescriptions.Clear();
+                        dataGrid.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription(args.Column.SortMemberPath, System.ComponentModel.ListSortDirection.Descending));
+                    }
+                };
+
+                // 初期状態で降順にソートする
+                dataGrid.Items.SortDescriptions.Clear();
+                dataGrid.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription(dataGrid.Columns[0].SortMemberPath, System.ComponentModel.ListSortDirection.Descending));
+            }
+        }
+
     }
 }

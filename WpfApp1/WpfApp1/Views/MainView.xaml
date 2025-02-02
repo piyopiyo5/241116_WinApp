@@ -121,7 +121,8 @@
                     <DataGrid ItemsSource="{Binding TaskTimeData}" AutoGenerateColumns="True"
                       CanUserAddRows="False"
                       HorizontalAlignment="Stretch"
-                      VerticalAlignment="Stretch"/>
+                      VerticalAlignment="Stretch"
+                      Loaded="DataGrid_Loaded"/>
                 </Grid>
             </TabItem>
         </TabControl>
