@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using WpfApp1.Views;
 
 namespace WpfApp1.ViewModels
 {
@@ -82,6 +84,33 @@ namespace WpfApp1.ViewModels
                         StopTimer();
                     },
                     _ => _isCountUpTimerRunning);
+            }
+        }
+
+        // タイマー修正コマンド（修正ウィンドウオープン）
+        private DelegateCommand? _timerEditCommand;
+        public DelegateCommand TimerEditCommand
+        {
+            get
+            {
+                return _timerEditCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        // メインウィンドウの Topmost を一時的にfalseにする
+                        Window mainWindow = Application.Current.MainWindow;
+                        mainWindow.Topmost = false;
+
+                        // モーダルウィンドウを開く
+                        TimerEditView editWindow = new TimerEditView();
+                        editWindow.ShowDialog();
+
+                        // モーダルウィンドウを最前面に持ってくる
+                        editWindow.Activate();
+
+                        // メインウィンドウのTopmostをtrueに戻す
+                        mainWindow.Topmost = true;
+                    },
+                    _ => !_isCountUpTimerRunning); // タイマー停止中に修正できる
             }
         }
 
