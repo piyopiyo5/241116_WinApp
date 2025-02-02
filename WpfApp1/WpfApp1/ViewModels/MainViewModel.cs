@@ -372,6 +372,9 @@ namespace WpfApp1.ViewModels
                 // 現在の日付をキーとして保存する
                 string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
 
+                // 経過時間がゼロのタイマーは削除する
+                RemoveZeroElapsedTimers(CountUpTimers);
+
                 // タイマーのデータをリストとして取得
                 var timersData = CountUpTimers.Select(t => new
                 {
@@ -421,6 +424,17 @@ namespace WpfApp1.ViewModels
             }
         }
 
+        // 経過時間がゼロのタイマーを削除する
+        void RemoveZeroElapsedTimers(ObservableCollection<CountUpTimer> countUpTimers)
+        {
+            for (int i = countUpTimers.Count - 1; i >= 0; i--)
+            {
+                if (countUpTimers[i].ElapsedTime == TimeSpan.Zero)
+                {
+                    countUpTimers.RemoveAt(i);
+                }
+            }
+        }
 
         // アプリデータを読み込み
         public void LoadAppState()
