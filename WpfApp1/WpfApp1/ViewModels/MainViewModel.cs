@@ -103,6 +103,11 @@ namespace WpfApp1.ViewModels
 
                 EnableNumLock();
             }
+
+            if (IsActiveWindowLogging)
+            {
+                ActiveWindowTitle = GetActiveWindowTitle();
+            }
         }
 
         // 時計表示を更新する
@@ -595,6 +600,85 @@ namespace WpfApp1.ViewModels
                 System.Diagnostics.Debug.WriteLine($"アプリ設定の読み込み中にエラーが発生しました: {ex.Message}");
             }
         }
+        #endregion
+
+        #region 業務解析のコード
+        // -----------------------------------------------------------------------------------------------------------------------
+        private bool _isActiveWindowLogging = true;
+        private bool IsActiveWindowLogging { get { return _isActiveWindowLogging; } }
+
+        // ActiveWindowLoggingの無効化
+        private DelegateCommand? _disableActiveWindowLoggingCommand;
+        public DelegateCommand DisableActiveWindowLoggingCommand
+        {
+            get
+            {
+                return _disableActiveWindowLoggingCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        _isActiveWindowLogging = false;
+                        UpdateActiveWindowLoggingCommand();
+                    },
+                    _ => _isActiveWindowLogging
+                    );
+            }
+        }
+
+        // ActiveWindowLoggingの有効化
+        private DelegateCommand? _enableActiveWindowLoggingCommand;
+        public DelegateCommand EnableActiveWindowLoggingCommand
+        {
+            get
+            {
+                return _enableActiveWindowLoggingCommand ??= new DelegateCommand(
+                    parameter =>
+                    {
+                        _isActiveWindowLogging = true;
+                        UpdateActiveWindowLoggingCommand();
+                    },
+                    _ => !_isActiveWindowLogging
+                    );
+
+            }
+        }
+
+        private void UpdateActiveWindowLoggingCommand()
+        {
+            EnableActiveWindowLoggingCommand.RaiseCanExecuteChanged();
+            DisableActiveWindowLoggingCommand.RaiseCanExecuteChanged();
+        }
+
+        // アクティブウィンドウタイトル
+        private string _activeWindowTitle = " ";
+        public string ActiveWindowTitle
+        {
+            get { return _activeWindowTitle; }
+            private set { SetProperty(ref _activeWindowTitle, value); }
+        }
+
+        // 外部のWindows APIを宣言
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        public static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+
+        // アクティブウィンドウのタイトルを取得する関数
+        public static string GetActiveWindowTitle()
+        {
+            // アクティブなウィンドウのハンドルを取得
+            IntPtr hWnd = GetForegroundWindow();
+
+            // アクティブウィンドウのタイトルを格納するStringBuilder
+            StringBuilder windowTitle = new StringBuilder(256);
+
+            // ウィンドウのタイトルを取得
+            GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
+
+            // 取得したタイトルを返す
+            return windowTitle.ToString();
+        }
+
         #endregion
     }
 }

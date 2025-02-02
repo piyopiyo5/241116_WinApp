@@ -132,7 +132,7 @@
             </TabItem>
 
             <!--業務分析タブ-->
-            <TabItem Header="業務分析" Tag="250,300">
+            <TabItem Header="業務分析" Tag="Auto">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -149,6 +149,7 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="アクティブウィンドウのロギング" TextAlignment="Left" VerticalAlignment="Center" Margin="2"/>
                     <Button Grid.Row="0" Grid.Column="1" Content="ON" Command="{Binding EnableActiveWindowLoggingCommand}" Width="40" Margin="2" />
                     <Button Grid.Row="0" Grid.Column="2" Content="OFF" Command="{Binding DisableActiveWindowLoggingCommand}" Width="40" Margin="2" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding ActiveWindowTitle, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Left" VerticalAlignment="Center" Margin="2"/>
                 </Grid>
             </TabItem>
         </TabControl>
