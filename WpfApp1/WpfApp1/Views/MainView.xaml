@@ -21,9 +21,9 @@
                 <TextBlock Text="{Binding ClockText,UpdateSourceTrigger=PropertyChanged}" />
             </StatusBarItem>
         </StatusBar>
-        <TabControl DockPanel.Dock="Top">
+        <TabControl DockPanel.Dock="Top" SelectionChanged="TabControl_SelectionChanged">
             <!--タイマータブ-->
-            <TabItem Header="タイマー">
+            <TabItem Header="タイマー" Tag="Auto">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -73,7 +73,7 @@
             </TabItem>
 
             <!--カレンダータブ-->
-            <TabItem Header="カレンダー">
+            <TabItem Header="カレンダー" Tag="Auto">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -90,7 +90,7 @@
             </TabItem>
 
             <!--設定タブ-->
-            <TabItem Header="設定">
+            <TabItem Header="設定" Tag="Auto">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -115,8 +115,8 @@
                 </Grid>
             </TabItem>
 
-            <!--TESTタブ-->
-            <TabItem Header="TEST">
+            <!--履歴タブ-->
+            <TabItem Header="履歴" Tag="250,300">
                 <Grid>
                     <DataGrid ItemsSource="{Binding TaskTimeData}" AutoGenerateColumns="True"
                       CanUserAddRows="False"

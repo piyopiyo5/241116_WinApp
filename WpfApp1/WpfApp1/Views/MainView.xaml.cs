@@ -27,5 +27,31 @@ namespace WpfApp1.Views
         {
             InitializeComponent();
         }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is TabControl tabControl && tabControl.SelectedItem is TabItem selectedTab)
+            {
+                if (selectedTab.Tag is string tagValue)
+                {
+                    if (tagValue == "Auto")
+                    {
+                        this.SizeToContent = SizeToContent.WidthAndHeight;
+                    }
+                    else
+                    {
+                        var dimensions = tagValue.Split(',');
+                        if (dimensions.Length == 2 &&
+                            int.TryParse(dimensions[0], out int width) &&
+                            int.TryParse(dimensions[1], out int height))
+                        {
+                            this.SizeToContent = SizeToContent.Manual; // 自動調整をオフ
+                            this.Width = width;
+                            this.Height = height;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
