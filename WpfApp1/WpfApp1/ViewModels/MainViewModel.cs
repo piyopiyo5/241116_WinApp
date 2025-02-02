@@ -2,6 +2,7 @@
 // MainViewModel.cs
 // --------------------------------------------------
 
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -47,7 +48,34 @@ namespace WpfApp1.ViewModels
 
             TaskTimeData = new ObservableCollection<DisplayRow>();
             LoadTaskTimeData();
+
+            SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
         }
+
+
+
+        #region セッション管理のコード
+        private static bool _isLocked = false;
+        private bool IsLocked { get { return _isLocked; } }
+
+        // セッション変更時のイベントハンドラ
+        static void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e)
+        {
+
+            switch (e.Reason)
+            {
+                case SessionSwitchReason.SessionLock:
+                    //Console.WriteLine(DateTime.Now + "：画面ロック");
+                    _isLocked = true;
+                    break;
+
+                case SessionSwitchReason.SessionUnlock:
+                    //Console.WriteLine(DateTime.Now + "：画面ロック解除");
+                    _isLocked = false;
+                    break;
+            }
+        }
+        #endregion
 
         #region 時計表示のコード
         // -----------------------------------------------------------------------------------------------------------------------
@@ -63,15 +91,18 @@ namespace WpfApp1.ViewModels
         // １秒ごとに呼び出されるイベントハンドラ
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            UpdateClock();
-            foreach (var timer in CountUpTimers)
+            if (!IsLocked)
             {
-                timer.UpdateCountUpTimer();
+                UpdateClock();
+                foreach (var timer in CountUpTimers)
+                {
+                    timer.UpdateCountUpTimer();
+                }
+
+                UpdateTotalCountUpTimer();
+
+                EnableNumLock();
             }
-
-            UpdateTotalCountUpTimer();
-
-            EnableNumLock();
         }
 
         // 時計表示を更新する
