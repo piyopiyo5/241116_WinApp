@@ -30,6 +30,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="{Binding TotalCountUpTimerText,UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" VerticalAlignment="Top" Margin="0,-21,6,0"/>
                     <ListBox Grid.Row="1" DockPanel.Dock="Top" ItemsSource="{Binding CountUpTimers}">
@@ -98,6 +99,7 @@
                     </ListBox>
                     <Button Grid.Row="2" Content="タイマー追加" Command="{Binding AddCountUpTimerCommand}" Margin="2" />
                     <Button Grid.Row="3" Content="タイマー停止" Command="{Binding StopAllTimerCommand}" Margin="2" />
+                    <Button Grid.Row="4" Content="xxxx" Command="{Binding TestCommand}" Margin="2" />
                 </Grid>
             </TabItem>
 
