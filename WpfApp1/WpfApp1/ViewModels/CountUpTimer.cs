@@ -25,10 +25,26 @@ namespace WpfApp1.ViewModels
 
         public bool _isCountUpTimerRunning = false; // カウントアップタイマーが動作中かどうか
 
+        // お気に入り
+        private bool _isFavorite;
+        public bool IsFavorite
+        {
+            get { return _isFavorite; }
+            set { SetProperty(ref _isFavorite, value); }
+        }
+
         public CountUpTimer(string? TimerName)
         {
             // 引数が null または空文字の場合にデフォルト名を設定
             _countUpTimerName = string.IsNullOrEmpty(TimerName) ? "タイマー" : TimerName;
+            IsFavorite = false;
+        }
+
+        public CountUpTimer(string? TimerName, bool IsFavorited)
+        {
+            // 引数が null または空文字の場合にデフォルト名を設定
+            _countUpTimerName = string.IsNullOrEmpty(TimerName) ? "タイマー" : TimerName;
+            IsFavorite = IsFavorited;
         }
 
         // カウントアップタイマーの名前
@@ -49,6 +65,21 @@ namespace WpfApp1.ViewModels
 
         // 他のタイマーの参照リスト
         public List<CountUpTimer> OtherTimers { get; set; } = new List<CountUpTimer>();
+
+        // お気に入り切り替えコマンド
+        private DelegateCommand? _favoriteChangeCommand;
+        public DelegateCommand FavoriteChangeCommand
+        {
+            get
+            {
+                return _favoriteChangeCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        IsFavorite = !IsFavorite;
+                    },
+                    _ => true);
+            }
+        }
 
         // タイマースタートコマンド
         private DelegateCommand? _timerStartCommand;

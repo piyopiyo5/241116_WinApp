@@ -404,7 +404,8 @@ namespace WpfApp1.ViewModels
                 var timersData = CountUpTimers.Select(t => new
                 {
                     t.CountUpTimerName,
-                    t.CountUpTimerText
+                    t.CountUpTimerText,
+                    t.IsFavorite
                 }).ToList();
 
                 // 保存用の階層構造データ
@@ -454,7 +455,7 @@ namespace WpfApp1.ViewModels
         {
             for (int i = countUpTimers.Count - 1; i >= 0; i--)
             {
-                if (countUpTimers[i].ElapsedTime == TimeSpan.Zero)
+                if (countUpTimers[i].ElapsedTime == TimeSpan.Zero && countUpTimers[i].IsFavorite == false)
                 {
                     countUpTimers.RemoveAt(i);
                 }
@@ -494,7 +495,7 @@ namespace WpfApp1.ViewModels
                                 // タイマーを復元
                                 foreach (var timerData in latestData.Timers)
                                 {
-                                    var newTimer = new CountUpTimer(timerData.CountUpTimerName);
+                                    var newTimer = new CountUpTimer(timerData.CountUpTimerName, timerData.IsFavorite);
                                     // 日付が今日なら経過時間も復元
                                     if (latestDate == DateTime.Now.ToString("yyyy-MM-dd"))
                                     {
@@ -540,6 +541,7 @@ namespace WpfApp1.ViewModels
         {
             public string? CountUpTimerName { get; set; }
             public string? CountUpTimerText { get; set; }
+            public bool IsFavorite { get; set; }
         }
 
         public class LatestAppState
