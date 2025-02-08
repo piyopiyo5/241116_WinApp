@@ -33,7 +33,9 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="{Binding TotalCountUpTimerText,UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" VerticalAlignment="Top" Margin="0,-21,6,0"/>
-                    <ListBox Grid.Row="1" DockPanel.Dock="Top" ItemsSource="{Binding CountUpTimers}">
+                    <ListBox Grid.Row="1" DockPanel.Dock="Top" ItemsSource="{Binding CountUpTimers}"
+                             AllowDrop="True" PreviewMouseLeftButtonDown="ListBox_PreviewMouseLeftButtonDown"
+                             DragOver="ListBox_DragOver" Drop="ListBox_Drop">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -48,6 +50,7 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="180" />
                                         <ColumnDefinition Width="60" />
                                         <ColumnDefinition Width="Auto" />
@@ -55,17 +58,19 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
+                                    <!-- ドラッグ用画像（これをドラッグすると並び替えが可能） -->
+                                    <Image  Grid.Row="0" Grid.Column="0" Source="/Picture/drag_icon.png" Width="20" Height="20" VerticalAlignment="Center" Cursor="Hand" />
                                     <!-- 削除ボタン -->
-                                    <Button Grid.Row="0" Grid.Column="0" Command="{Binding DataContext.RemoveTimerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="15" Margin="2" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                    <Button Grid.Row="0" Grid.Column="1" Command="{Binding DataContext.RemoveTimerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="15" Margin="2" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
                                         <Button.Content>
                                             <Image Source="/Picture/gomibako.png" />
                                             <!--<Image Source="C:\work\241116_WinApp\WpfApp1\WpfApp1\Picture\gomibako3.png" />-->
                                         </Button.Content>
                                     </Button>
                                     <!-- ユーザーが編集可能なタイマー名 -->
-                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CountUpTimerName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="2" />
+                                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding CountUpTimerName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="2" />
                                     <!-- カウントアップタイマー -->
-                                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding CountUpTimerText, Mode=OneWay}" TextAlignment="Center" IsReadOnly="True" Margin="2" Grid.ZIndex="1">
+                                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding CountUpTimerText, Mode=OneWay}" TextAlignment="Center" IsReadOnly="True" Margin="2" Grid.ZIndex="1">
                                         <TextBox.Style>
                                             <Style TargetType="TextBox">
                                                 <Setter Property="Cursor" Value="Hand"/>
@@ -74,7 +79,7 @@
                                         </TextBox.Style>
                                     </TextBox>
                                     <!-- 修正ボタン(重ねて非表示) -->
-                                    <Button Grid.Row="0" Grid.Column="2" Command="{Binding TimerEditCommand}" Width="60" Margin="2" Background="Transparent" BorderBrush="Transparent" Grid.ZIndex="0">
+                                    <Button Grid.Row="0" Grid.Column="3" Command="{Binding TimerEditCommand}" Width="60" Margin="2" Background="Transparent" BorderBrush="Transparent" Grid.ZIndex="0">
                                         <Button.Style>
                                             <Style TargetType="Button">
                                                 <Setter Property="Background" Value="Transparent"/>
@@ -89,17 +94,16 @@
                                         </Button.Style>
                                     </Button>
                                     <!-- 開始ボタン -->
-                                    <Button Grid.Row="0" Grid.Column="3" Content="開始" Command="{Binding TimerStartCommand}" Width="40" Margin="2" />
+                                    <Button Grid.Row="0" Grid.Column="4" Content="開始" Command="{Binding TimerStartCommand}" Width="40" Margin="2" />
                                     <!--お気に入り-->
-                                    <Button Grid.Row="0" Grid.Column="4" Content="X" Command="{Binding FavoriteChangeCommand}" Width="40" Margin="2" />
-                                    <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding IsFavorite, Mode=OneWay}" TextAlignment="Center" IsReadOnly="True" Margin="2"/>
+                                    <Button Grid.Row="0" Grid.Column="5" Content="X" Command="{Binding FavoriteChangeCommand}" Width="40" Margin="2" />
+                                    <TextBox Grid.Row="0" Grid.Column="6" Text="{Binding IsFavorite, Mode=OneWay}" TextAlignment="Center" IsReadOnly="True" Margin="2"/>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                     <Button Grid.Row="2" Content="タイマー追加" Command="{Binding AddCountUpTimerCommand}" Margin="2" />
                     <Button Grid.Row="3" Content="タイマー停止" Command="{Binding StopAllTimerCommand}" Margin="2" />
-                    <Button Grid.Row="4" Content="xxxx" Command="{Binding TestCommand}" Margin="2" />
                 </Grid>
             </TabItem>
 

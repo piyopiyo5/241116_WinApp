@@ -370,26 +370,6 @@ namespace WpfApp1.ViewModels
             }
         }
 
-        // TestCommand
-        private DelegateCommand? _testCommand;
-        public DelegateCommand TestCommand
-        {
-            get
-            {
-                return _testCommand ??= new DelegateCommand(
-                    _ =>
-                    {
-                        if (CountUpTimers.Count > 1) // 要素が2つ以上あるときのみ処理
-                        {
-                            CountUpTimers.Move(CountUpTimers.Count - 1, 0);
-                        }
-
-                    },
-                    _ => true
-                );
-            }
-        }
-
         // OtherTimersを更新する
         private void UpdateOtherTimers()
         {
