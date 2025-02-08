@@ -83,6 +83,28 @@ namespace WpfApp1.Views
             }
         }
 
+        private void OpenVersionInformation(object sender, RoutedEventArgs e)
+        {
+            // メインウィンドウの Topmost を一時的にfalseにする
+            Window mainWindow = Application.Current.MainWindow;
+            bool TopmostSetting = mainWindow.Topmost;
+            mainWindow.Topmost = false;
+
+            // モーダルウィンドウを開く
+            VersionInfomationView editWindow = new VersionInfomationView()
+            {
+                Owner = Window.GetWindow(mainWindow),
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            editWindow.ShowDialog();
+
+            // モーダルウィンドウを最前面に持ってくる
+            editWindow.Activate();
+
+            // メインウィンドウのTopmostを元の状態に戻す
+            mainWindow.Topmost = TopmostSetting;
+        }
+
         private void TextBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is TextBox textBox && textBox.DataContext is CountUpTimer timer)
