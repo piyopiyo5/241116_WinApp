@@ -33,6 +33,14 @@ namespace WpfApp1.ViewModels
             set { SetProperty(ref _isFavorite, value); }
         }
 
+        // お気に入りボタンテキスト
+        private string _favoriteButtonText;
+        public string FavoriteButtonText
+        {
+            get { return _favoriteButtonText; }
+            set { SetProperty(ref _favoriteButtonText, value); }
+        }
+
         public CountUpTimer(string? TimerName)
         {
             // 引数が null または空文字の場合にデフォルト名を設定
@@ -45,6 +53,7 @@ namespace WpfApp1.ViewModels
             // 引数が null または空文字の場合にデフォルト名を設定
             _countUpTimerName = string.IsNullOrEmpty(TimerName) ? "タイマー" : TimerName;
             IsFavorite = IsFavorited;
+            FavoriteButtonText = IsFavorite ? "★" : "☆";
         }
 
         // カウントアップタイマーの名前
@@ -76,6 +85,7 @@ namespace WpfApp1.ViewModels
                     _ =>
                     {
                         IsFavorite = !IsFavorite;
+                        FavoriteButtonText = IsFavorite ? "★" : "☆";
                     },
                     _ => true);
             }
