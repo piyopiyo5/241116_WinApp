@@ -34,7 +34,7 @@ namespace WpfApp1.ViewModels
         }
 
         // お気に入りボタンテキスト
-        private string _favoriteButtonText;
+        private string _favoriteButtonText = "☆";
         public string FavoriteButtonText
         {
             get { return _favoriteButtonText; }
@@ -139,6 +139,7 @@ namespace WpfApp1.ViewModels
                     {
                         // メインウィンドウの Topmost を一時的にfalseにする
                         Window mainWindow = Application.Current.MainWindow;
+                        bool TopmostSetting = mainWindow.Topmost;
                         mainWindow.Topmost = false;
 
                         // モーダルウィンドウを開く
@@ -152,8 +153,8 @@ namespace WpfApp1.ViewModels
                         // モーダルウィンドウを最前面に持ってくる
                         editWindow.Activate();
 
-                        // メインウィンドウのTopmostをtrueに戻す
-                        mainWindow.Topmost = true;
+                        // メインウィンドウのTopmostを元の状態に戻す
+                        mainWindow.Topmost = TopmostSetting;
                     },
                     _ => true); // タイマー停止中に修正できる
             }
@@ -203,7 +204,7 @@ namespace WpfApp1.ViewModels
         }
 
         // タイマー停止
-        private void StopTimer()
+        internal void StopTimer()
         {
             _isCountUpTimerRunning = false;
             UpdateCommandStates();

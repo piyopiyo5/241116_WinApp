@@ -362,7 +362,7 @@ namespace WpfApp1.ViewModels
                         // タイマーを停止
                         foreach (var timer in CountUpTimers)
                         {
-                            timer.TimerStopCommand.Execute(null);
+                            timer.StopTimer();
                         }
                     },
                     _ => true
