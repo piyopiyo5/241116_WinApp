@@ -320,7 +320,7 @@ namespace WpfApp1.ViewModels
                     _ =>
                     {
                         // カウントアップタイマーの追加
-                        CountUpTimers.Add(new CountUpTimer("タイマー" + Convert.ToString(CountUpTimers.Count)));
+                        CountUpTimers.Add(new CountUpTimer("Timer" + Convert.ToString(CountUpTimers.Count)));
                         UpdateOtherTimers();
                     },
                     _ => true);
