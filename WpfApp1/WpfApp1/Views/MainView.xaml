@@ -61,7 +61,7 @@
                                     <!-- ドラッグ用画像（これをドラッグすると並び替えが可能） -->
                                     <Image  Grid.Row="0" Grid.Column="0" Source="/Picture/drag_icon.png" Width="20" Height="20" VerticalAlignment="Center" Cursor="Hand" />
                                     <!-- 削除ボタン -->
-                                    <Button Grid.Row="0" Grid.Column="1" Command="{Binding DataContext.RemoveTimerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="15" Margin="2" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                    <Button Grid.Row="0" Grid.Column="1" Command="{Binding DataContext.RemoveTimerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="20" Margin="2" Background="Transparent" BorderBrush="Transparent">
                                         <Button.Content>
                                             <Image Source="/Picture/gomibako.png" />
                                             <!--<Image Source="C:\work\241116_WinApp\WpfApp1\WpfApp1\Picture\gomibako3.png" />-->
@@ -150,7 +150,7 @@
             </TabItem>
 
             <!--履歴タブ-->
-            <TabItem Header="履歴" Tag="250,300">
+            <TabItem Header="履歴" Tag="Auto">
                 <Grid>
                     <DataGrid ItemsSource="{Binding TaskTimeData}" AutoGenerateColumns="True"
                       CanUserAddRows="False"
