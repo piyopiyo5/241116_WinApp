@@ -350,6 +350,26 @@ namespace WpfApp1.ViewModels
             }
         }
 
+        // カウントアップタイマーを停止
+        private DelegateCommand? _stopAllTimerCommand;
+        public DelegateCommand StopAllTimerCommand
+        {
+            get
+            {
+                return _stopAllTimerCommand ??= new DelegateCommand(
+                    _ =>
+                    {
+                        // タイマーを停止
+                        foreach (var timer in CountUpTimers)
+                        {
+                            timer.TimerStopCommand.Execute(null);
+                        }
+                    },
+                    _ => true
+                );
+            }
+        }
+
         // OtherTimersを更新する
         private void UpdateOtherTimers()
         {

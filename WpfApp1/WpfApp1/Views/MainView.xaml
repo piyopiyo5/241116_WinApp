@@ -29,6 +29,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="{Binding TotalCountUpTimerText,UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" VerticalAlignment="Top" Margin="0,-21,6,0"/>
                     <ListBox Grid.Row="1" DockPanel.Dock="Top" ItemsSource="{Binding CountUpTimers}">
@@ -46,9 +47,8 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="180" />
                                         <ColumnDefinition Width="60" />
-                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
@@ -88,13 +88,12 @@
                                     </Button>
                                     <!-- 開始ボタン -->
                                     <Button Grid.Row="0" Grid.Column="3" Content="開始" Command="{Binding TimerStartCommand}" Width="40" Margin="2" />
-                                    <!-- 停止ボタン -->
-                                    <Button Grid.Row="0" Grid.Column="4" Content="停止" Command="{Binding TimerStopCommand}" Width="40" Margin="2" />
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                     <Button Grid.Row="2" Content="タイマー追加" Command="{Binding AddCountUpTimerCommand}" Margin="2" />
+                    <Button Grid.Row="3" Content="タイマー停止" Command="{Binding StopAllTimerCommand}" Margin="2" />
                 </Grid>
             </TabItem>
 
