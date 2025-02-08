@@ -51,24 +51,40 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
+
                                     <!-- 削除ボタン -->
                                     <Button Grid.Row="0" Grid.Column="0" Content="削除" Command="{Binding DataContext.RemoveTimerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="40" Margin="2" />
                                     <!-- ユーザーが編集可能なタイマー名 -->
-                                    <TextBox Grid.Row="0" Grid.Column="1" 
-                                         Text="{Binding CountUpTimerName, UpdateSourceTrigger=PropertyChanged}" 
-                                         VerticalAlignment="Center" Margin="2" />
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CountUpTimerName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="2" />
                                     <!-- カウントアップタイマー -->
-                                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding CountUpTimerText, Mode=OneWay}"  TextAlignment="Center" IsReadOnly="True" Margin="2" />
-                                    <!--修正ボタン-->
-                                    <Button Grid.Row="0" Grid.Column="3" Content="修正" Command="{Binding TimerEditCommand}" Width="40" Margin="2" />
-                                    <!--区切り線-->
-                                    <Border Grid.Row="0" Grid.Column="4" BorderBrush="Black" BorderThickness="0.5" Margin="2" />
+                                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding CountUpTimerText, Mode=OneWay}" TextAlignment="Center" IsReadOnly="True" Margin="2" Grid.ZIndex="1">
+                                        <TextBox.Style>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Cursor" Value="Hand"/>
+                                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="TextBox_MouseLeftButtonDown"/>
+                                            </Style>
+                                        </TextBox.Style>
+                                    </TextBox>
+                                    <!-- 修正ボタン(重ねて非表示) -->
+                                    <Button Grid.Row="0" Grid.Column="2" Command="{Binding TimerEditCommand}" Width="60" Margin="2" Background="Transparent" BorderBrush="Transparent" Grid.ZIndex="0">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                        <Setter Property="BorderBrush" Value="Transparent"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                     <!-- 開始ボタン -->
-                                    <Button Grid.Row="0" Grid.Column="5" Content="開始" Command="{Binding TimerStartCommand}" Width="40" Margin="2" />
+                                    <Button Grid.Row="0" Grid.Column="3" Content="開始" Command="{Binding TimerStartCommand}" Width="40" Margin="2" />
                                     <!-- 停止ボタン -->
-                                    <Button Grid.Row="0" Grid.Column="6" Content="停止" Command="{Binding TimerStopCommand}" Width="40" Margin="2" />
+                                    <Button Grid.Row="0" Grid.Column="4" Content="停止" Command="{Binding TimerStopCommand}" Width="40" Margin="2" />
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

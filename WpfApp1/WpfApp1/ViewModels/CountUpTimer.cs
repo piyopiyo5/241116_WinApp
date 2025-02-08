@@ -105,7 +105,7 @@ namespace WpfApp1.ViewModels
                         {
                             Owner = Window.GetWindow(mainWindow),
                             WindowStartupLocation = WindowStartupLocation.CenterOwner
-                        }; ;
+                        };
                         editWindow.ShowDialog();
 
                         // モーダルウィンドウを最前面に持ってくる
@@ -114,7 +114,7 @@ namespace WpfApp1.ViewModels
                         // メインウィンドウのTopmostをtrueに戻す
                         mainWindow.Topmost = true;
                     },
-                    _ => !_isCountUpTimerRunning); // タイマー停止中に修正できる
+                    _ => true); // タイマー停止中に修正できる
             }
         }
 
@@ -129,7 +129,7 @@ namespace WpfApp1.ViewModels
                     {
                         // タイマーを10分インクリメントする
                         _elapsedTime += TimeSpan.FromMinutes(10);
-                        UpdateCountUpTimer();
+                        CountUpTimerText = _elapsedTime.ToString(@"hh\:mm\:ss");
                     },
                     _ => true);
             }
@@ -147,7 +147,7 @@ namespace WpfApp1.ViewModels
                         // タイマーを10分ディンクリメントする
                         TimeSpan decrement = _elapsedTime - TimeSpan.FromMinutes(10);
                         _elapsedTime = (decrement > TimeSpan.Zero) ? decrement : TimeSpan.Zero;
-                        UpdateCountUpTimer();
+                        CountUpTimerText = _elapsedTime.ToString(@"hh\:mm\:ss");
                     },
                     _ => true);
             }

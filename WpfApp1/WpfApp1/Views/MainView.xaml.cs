@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WpfApp1.ViewModels;
 
 namespace WpfApp1.Views
 {
@@ -79,5 +80,15 @@ namespace WpfApp1.Views
             }
         }
 
+        private void TextBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is TextBox textBox && textBox.DataContext is CountUpTimer timer)
+            {
+                if (timer.TimerEditCommand.CanExecute(null))
+                {
+                    timer.TimerEditCommand.Execute(null);
+                }
+            }
+        }
     }
 }
