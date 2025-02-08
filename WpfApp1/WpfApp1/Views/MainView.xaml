@@ -54,7 +54,12 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- 削除ボタン -->
-                                    <Button Grid.Row="0" Grid.Column="0" Content="削除" Command="{Binding DataContext.RemoveTimerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="40" Margin="2" />
+                                    <Button Grid.Row="0" Grid.Column="0" Command="{Binding DataContext.RemoveTimerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="15" Margin="2" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                        <Button.Content>
+                                            <Image Source="/Picture/gomibako.png" />
+                                            <!--<Image Source="C:\work\241116_WinApp\WpfApp1\WpfApp1\Picture\gomibako3.png" />-->
+                                        </Button.Content>
+                                    </Button>
                                     <!-- ユーザーが編集可能なタイマー名 -->
                                     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CountUpTimerName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="2" />
                                     <!-- カウントアップタイマー -->
