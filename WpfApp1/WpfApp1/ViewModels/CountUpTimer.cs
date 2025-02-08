@@ -101,7 +101,11 @@ namespace WpfApp1.ViewModels
                         mainWindow.Topmost = false;
 
                         // モーダルウィンドウを開く
-                        TimerEditView editWindow = new TimerEditView(this);
+                        TimerEditView editWindow = new TimerEditView(this)
+                        {
+                            Owner = Window.GetWindow(mainWindow),
+                            WindowStartupLocation = WindowStartupLocation.CenterOwner
+                        }; ;
                         editWindow.ShowDialog();
 
                         // モーダルウィンドウを最前面に持ってくる
