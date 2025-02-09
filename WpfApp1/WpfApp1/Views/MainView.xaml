@@ -61,14 +61,14 @@
                                     <!-- ドラッグ用画像（これをドラッグすると並び替えが可能） -->
                                     <Image  Grid.Row="0" Grid.Column="0" Source="/Picture/drag_icon.png" Width="20" Height="20" VerticalAlignment="Center" Cursor="Hand" />
                                     <!-- 削除ボタン -->
-                                    <Button Grid.Row="0" Grid.Column="1" Command="{Binding DataContext.RemoveTimerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="20" Margin="2" Background="Transparent" BorderBrush="Transparent">
+                                    <Button Grid.Row="0" Grid.Column="1" Command="{Binding DataContext.RemoveTimerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" Width="20" Margin="1" Background="Transparent" BorderBrush="Transparent">
                                         <Button.Content>
                                             <Image Source="/Picture/gomibako.png" />
                                             <!--<Image Source="C:\work\241116_WinApp\WpfApp1\WpfApp1\Picture\gomibako3.png" />-->
                                         </Button.Content>
                                     </Button>
                                     <!--お気に入りボタン-->
-                                    <Button Grid.Row="0" Grid.Column="2" Content="{Binding FavoriteButtonText, UpdateSourceTrigger=PropertyChanged}" Command="{Binding FavoriteChangeCommand}" Width="20" Margin="2" Background="Transparent" BorderBrush="Transparent"/>
+                                    <Button Grid.Row="0" Grid.Column="2" Content="{Binding FavoriteButtonText, UpdateSourceTrigger=PropertyChanged}" Command="{Binding FavoriteChangeCommand}" Width="20" Margin="0" Background="Transparent" BorderBrush="Transparent"/>
                                     <!-- ユーザーが編集可能なタイマー名 -->
                                     <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding CountUpTimerName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="2" />
                                     <!-- カウントアップタイマー -->
