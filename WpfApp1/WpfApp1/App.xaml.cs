@@ -31,7 +31,7 @@ namespace WpfApp1
             w.DataContext = _mainViewModel;
 
             // アプリ状態をロード
-            _mainViewModel.LoadAppState();
+            _mainViewModel.LoadAppData();
             _mainViewModel.LoadAppSettings();
 
             w.Show();
