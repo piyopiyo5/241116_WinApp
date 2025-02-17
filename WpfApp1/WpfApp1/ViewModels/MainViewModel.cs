@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Printing;
@@ -402,62 +403,76 @@ namespace WpfApp1.ViewModels
 
         #region 保存と読み込みのコード
         // -----------------------------------------------------------------------------------------------------------------------
+
+        private const string DatabaseFile = "db.db";
+
         // アプリデータを保存
         public void SaveAppData()
         {
+
             try
             {
                 string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
                 RemoveZeroElapsedTimers(CountUpTimers);
 
-                var timersData = CountUpTimers.Select(t => new
-                {
-                    t.CountUpTimerName,
-                    t.CountUpTimerText,
-                    t.IsFavorite
-                }).ToList();
+                EnsureDatabaseExists();
 
-                var appData = new Dictionary<string, object>
+                using (var connection = new SQLiteConnection($"Data Source={DatabaseFile};Version=3;"))
                 {
-                    ["Header"] = new { Version = "1.0.0" },
-                    ["Body"] = new Dictionary<string, object>()
-                };
+                    connection.Open();
 
-                if (System.IO.File.Exists("data.json"))
-                {
-                    string existingJson = System.IO.File.ReadAllText("data.json");
-                    var existingData = JsonSerializer.Deserialize<Dictionary<string, object>>(existingJson);
+                    string insertQuery = @"
+                    INSERT OR REPLACE INTO CountUpTimers 
+                    (Date, CountUpTimerName, CountUpTimerText, IsFavorite) 
+                    VALUES (@Date, @CountUpTimerName, @CountUpTimerText, @IsFavorite);
+                ";
 
-                    if (existingData != null && existingData.ContainsKey("Body"))
+                    using (var command = new SQLiteCommand(insertQuery, connection))
                     {
-                        appData["Body"] = JsonSerializer.Deserialize<Dictionary<string, object>>(existingData["Body"].ToString()) ?? new Dictionary<string, object>();
+                        foreach (var timer in CountUpTimers)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.AddWithValue("@Date", currentDate);
+                            command.Parameters.AddWithValue("@CountUpTimerName", timer.CountUpTimerName);
+                            command.Parameters.AddWithValue("@CountUpTimerText", timer.CountUpTimerText);
+                            command.Parameters.AddWithValue("@IsFavorite", timer.IsFavorite ? 1 : 0);
+
+                            command.ExecuteNonQuery();
+                        }
                     }
                 }
-
-                var bodyData = appData["Body"] as Dictionary<string, object>;
-                if (bodyData == null)
-                {
-                    bodyData = new Dictionary<string, object>();
-                    appData["Body"] = bodyData;
-                }
-
-                bodyData[currentDate] = new
-                {
-                    TimerCount = CountUpTimers.Count,
-                    Timers = timersData
-                };
-
-                var json = JsonSerializer.Serialize(appData, new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                });
-
-                System.IO.File.WriteAllText("data.json", json);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"アプリ状態の保存中にエラーが発生しました: {ex.Message}");
+            }
+        }
+
+        private void EnsureDatabaseExists()
+        {
+            if (!File.Exists(DatabaseFile))
+            {
+                SQLiteConnection.CreateFile(DatabaseFile);
+            }
+
+            using (var connection = new SQLiteConnection($"Data Source={DatabaseFile};Version=3;"))
+            {
+                connection.Open();
+
+                string createTableQuery = @"
+                CREATE TABLE IF NOT EXISTS CountUpTimers (
+                    Date TEXT NOT NULL,
+                    CountUpTimerName TEXT NOT NULL,
+                    CountUpTimerText TEXT,
+                    IsFavorite INTEGER,
+                    PRIMARY KEY (Date, CountUpTimerName)
+                );
+            ";
+
+                using (var command = new SQLiteCommand(createTableQuery, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
             }
         }
 
@@ -478,51 +493,66 @@ namespace WpfApp1.ViewModels
         {
             try
             {
-                if (System.IO.File.Exists("data.json"))
+                if (!File.Exists(DatabaseFile))
                 {
-                    var json = System.IO.File.ReadAllText("data.json");
-                    var appData = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+                    CountUpTimers.Add(new CountUpTimer("タイマー0"));
+                    return;
+                }
 
-                    if (appData != null && appData.ContainsKey("Header") && appData.ContainsKey("Body"))
+                using (var connection = new SQLiteConnection($"Data Source={DatabaseFile};Version=3;"))
+                {
+                    connection.Open();
+
+                    // 最新の日付を取得
+                    string getLatestDateQuery = "SELECT DISTINCT Date FROM CountUpTimers ORDER BY Date DESC LIMIT 1;";
+
+                    string latestDate = null;
+                    using (var command = new SQLiteCommand(getLatestDateQuery, connection))
                     {
-                        var header = JsonSerializer.Deserialize<Dictionary<string, string>>(appData["Header"].ToString());
-                        if (header != null && header.ContainsKey("Version") && header["Version"] == "1.0.0")
+                        var result = command.ExecuteScalar();
+                        if (result != null)
                         {
-                            var body = JsonSerializer.Deserialize<Dictionary<string, object>>(appData["Body"].ToString());
-                            if (body != null && body.Any())
+                            latestDate = result.ToString();
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(latestDate))
+                    {
+                        CountUpTimers.Add(new CountUpTimer("タイマー0"));
+                        return;
+                    }
+
+                    // 最新の日付のデータを取得
+                    string getTimersQuery = @"
+                    SELECT CountUpTimerName, CountUpTimerText, IsFavorite 
+                    FROM CountUpTimers 
+                    WHERE Date = @Date;
+                ";
+
+                    using (var command = new SQLiteCommand(getTimersQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@Date", latestDate);
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
                             {
-                                var latestDate = body.Keys.Max();
+                                string name = reader["CountUpTimerName"].ToString();
+                                string text = reader["CountUpTimerText"].ToString();
+                                bool isFavorite = reader.GetInt32(reader.GetOrdinal("IsFavorite")) == 1;
 
-                                if (latestDate == null)
+                                var newTimer = new CountUpTimer(name, isFavorite);
+
+                                if (latestDate == DateTime.Now.ToString("yyyy-MM-dd"))
                                 {
-                                    return;
+                                    newTimer.ElapsedTime = string.IsNullOrEmpty(text) ? TimeSpan.Zero : TimeSpan.Parse(text);
+                                    newTimer.UpdateCountUpTimer();
                                 }
 
-                                var latestDataJson = body[latestDate]?.ToString();
-                                if (!string.IsNullOrEmpty(latestDataJson))
-                                {
-                                    var latestData = JsonSerializer.Deserialize<LatestAppData>(latestDataJson);
-                                    if (latestData != null)
-                                    {
-                                        foreach (var timerData in latestData.Timers)
-                                        {
-                                            var newTimer = new CountUpTimer(timerData.CountUpTimerName, timerData.IsFavorite);
-                                            if (latestDate == DateTime.Now.ToString("yyyy-MM-dd"))
-                                            {
-                                                newTimer.ElapsedTime = string.IsNullOrEmpty(timerData.CountUpTimerText) ? TimeSpan.Zero : TimeSpan.Parse(timerData.CountUpTimerText);
-                                                newTimer.UpdateCountUpTimer();
-                                            }
-                                            CountUpTimers.Add(newTimer);
-                                        }
-                                    }
-                                }
+                                CountUpTimers.Add(newTimer);
                             }
                         }
                     }
-                }
-                else
-                {
-                    CountUpTimers.Add(new CountUpTimer("タイマー0"));
                 }
 
                 UpdateOtherTimers();
