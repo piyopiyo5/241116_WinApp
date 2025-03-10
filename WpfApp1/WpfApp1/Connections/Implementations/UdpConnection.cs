@@ -36,10 +36,10 @@ public class UdpConnection : IConnection
             _client = new UdpClient();
             if (_settings.LocalAddress != null)
             {
-                _client.Client.Bind(new IPEndPoint(_settings.LocalAddress, 0));
+                await Task.Run(() => _client.Client.Bind(new IPEndPoint(_settings.LocalAddress, 0)));
             }
             
-            _client.Connect(_settings.IpAddress, _settings.Port);
+            await Task.Run(() => _client.Connect(_settings.IpAddress, _settings.Port));
             _client.Client.ReceiveTimeout = Timeout;
             _client.Client.SendTimeout = Timeout;
 
@@ -47,20 +47,26 @@ public class UdpConnection : IConnection
             _ = StartReceiving(_receiveCts.Token);
 
             _isConnected = true;
-            ((ConnectionStatistics)Statistics).UpdateLastConnected();
-            _logger.LogInfo($"Connected to {_settings.IpAddress}:{_settings.Port}");
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).UpdateLastConnected();
+                _logger.LogInfo($"Connected to {_settings.IpAddress}:{_settings.Port}");
+            });
             return true;
         }
         catch (Exception ex)
         {
-            ((ConnectionStatistics)Statistics).IncrementErrorCount();
-            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
-            _logger.LogError("Connection failed", ex);
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+                _logger.LogError("Connection failed", ex);
+            });
             return false;
         }
     }
 
-    public void Disconnect()
+    public async Task DisconnectAsync()
     {
         try
         {
@@ -69,13 +75,16 @@ public class UdpConnection : IConnection
             _client?.Dispose();
             _client = null;
             _isConnected = false;
-            _logger.LogInfo("Disconnected");
+            await Task.Run(() => _logger.LogInfo("Disconnected"));
         }
         catch (Exception ex)
         {
-            ((ConnectionStatistics)Statistics).IncrementErrorCount();
-            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
-            _logger.LogError("Disconnect failed", ex);
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+                _logger.LogError("Disconnect failed", ex);
+            });
         }
     }
 
@@ -84,23 +93,32 @@ public class UdpConnection : IConnection
         if (!IsConnected || _client == null)
         {
             var ex = new InvalidOperationException("Not connected");
-            ((ConnectionStatistics)Statistics).IncrementErrorCount();
-            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+            });
             return false;
         }
 
         try
         {
             await _client.SendAsync(data);
-            ((ConnectionStatistics)Statistics).AddSentBytes(data.Length);
-            _logger.LogData("Sent", data);
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).AddSentBytes(data.Length);
+                _logger.LogData("Sent", data);
+            });
             return true;
         }
         catch (Exception ex)
         {
-            ((ConnectionStatistics)Statistics).IncrementErrorCount();
-            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
-            _logger.LogError("Send failed", ex);
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+                _logger.LogError("Send failed", ex);
+            });
             return false;
         }
     }
@@ -114,9 +132,12 @@ public class UdpConnection : IConnection
                 var result = await _client.ReceiveAsync(cancellationToken);
                 var receivedData = result.Buffer;
 
-                ((ConnectionStatistics)Statistics).AddReceivedBytes(receivedData.Length);
-                _logger.LogData("Received", receivedData);
-                OnDataReceived?.Invoke(this, new ConnectionEventArgs(receivedData));
+                await Task.Run(() =>
+                {
+                    ((ConnectionStatistics)Statistics).AddReceivedBytes(receivedData.Length);
+                    _logger.LogData("Received", receivedData);
+                    OnDataReceived?.Invoke(this, new ConnectionEventArgs(receivedData));
+                });
             }
             catch (OperationCanceledException)
             {
@@ -124,9 +145,12 @@ public class UdpConnection : IConnection
             }
             catch (Exception ex)
             {
-                ((ConnectionStatistics)Statistics).IncrementErrorCount();
-                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
-                _logger.LogError("Receive failed", ex);
+                await Task.Run(() =>
+                {
+                    ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                    OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+                    _logger.LogError("Receive failed", ex);
+                });
                 break;
             }
         }

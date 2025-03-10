@@ -13,6 +13,6 @@ public interface IConnection
     event EventHandler<ConnectionEventArgs> OnError;
 
     Task<bool> Connect();
-    void Disconnect();
+    Task DisconnectAsync();
     Task<bool> SendAsync(byte[] data);
 }

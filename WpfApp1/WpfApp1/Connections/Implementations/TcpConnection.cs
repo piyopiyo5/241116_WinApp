@@ -39,7 +39,7 @@ public class TcpConnection : IConnection
 
             if (_settings.LocalAddress != null)
             {
-                _client.Client.Bind(new IPEndPoint(_settings.LocalAddress, 0));
+                await Task.Run(() => _client.Client.Bind(new IPEndPoint(_settings.LocalAddress, 0)));
             }
 
             await _client.ConnectAsync(_settings.IpAddress, _settings.Port);
@@ -48,20 +48,26 @@ public class TcpConnection : IConnection
             _receiveCts = new CancellationTokenSource();
             _ = StartReceiving(_receiveCts.Token);
 
-            ((ConnectionStatistics)Statistics).UpdateLastConnected();
-            _logger.LogInfo($"Connected to {_settings.IpAddress}:{_settings.Port}");
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).UpdateLastConnected();
+                _logger.LogInfo($"Connected to {_settings.IpAddress}:{_settings.Port}");
+            });
             return true;
         }
         catch (Exception ex)
         {
-            ((ConnectionStatistics)Statistics).IncrementErrorCount();
-            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
-            _logger.LogError("Connection failed", ex);
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+                _logger.LogError("Connection failed", ex);
+            });
             return false;
         }
     }
 
-    public void Disconnect()
+    public async Task DisconnectAsync()
     {
         try
         {
@@ -71,13 +77,16 @@ public class TcpConnection : IConnection
             _client?.Dispose();
             _client = null;
             _stream = null;
-            _logger.LogInfo("Disconnected");
+            await Task.Run(() => _logger.LogInfo("Disconnected"));
         }
         catch (Exception ex)
         {
-            ((ConnectionStatistics)Statistics).IncrementErrorCount();
-            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
-            _logger.LogError("Disconnect failed", ex);
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+                _logger.LogError("Disconnect failed", ex);
+            });
         }
     }
 
@@ -86,23 +95,32 @@ public class TcpConnection : IConnection
         if (!IsConnected || _stream == null)
         {
             var ex = new InvalidOperationException("Not connected");
-            ((ConnectionStatistics)Statistics).IncrementErrorCount();
-            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+            });
             return false;
         }
 
         try
         {
             await _stream.WriteAsync(data);
-            ((ConnectionStatistics)Statistics).AddSentBytes(data.Length);
-            _logger.LogData("Sent", data);
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).AddSentBytes(data.Length);
+                _logger.LogData("Sent", data);
+            });
             return true;
         }
         catch (Exception ex)
         {
-            ((ConnectionStatistics)Statistics).IncrementErrorCount();
-            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
-            _logger.LogError("Send failed", ex);
+            await Task.Run(() =>
+            {
+                ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+                _logger.LogError("Send failed", ex);
+            });
             return false;
         }
     }
@@ -124,9 +142,12 @@ public class TcpConnection : IConnection
                 var receivedData = new byte[bytesRead];
                 Array.Copy(buffer, receivedData, bytesRead);
 
-                ((ConnectionStatistics)Statistics).AddReceivedBytes(bytesRead);
-                _logger.LogData("Received", receivedData);
-                OnDataReceived?.Invoke(this, new ConnectionEventArgs(receivedData));
+                await Task.Run(() =>
+                {
+                    ((ConnectionStatistics)Statistics).AddReceivedBytes(bytesRead);
+                    _logger.LogData("Received", receivedData);
+                    OnDataReceived?.Invoke(this, new ConnectionEventArgs(receivedData));
+                });
             }
             catch (OperationCanceledException)
             {
@@ -134,9 +155,12 @@ public class TcpConnection : IConnection
             }
             catch (Exception ex)
             {
-                ((ConnectionStatistics)Statistics).IncrementErrorCount();
-                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
-                _logger.LogError("Receive failed", ex);
+                await Task.Run(() =>
+                {
+                    ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                    OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+                    _logger.LogError("Receive failed", ex);
+                });
                 break;
             }
         }

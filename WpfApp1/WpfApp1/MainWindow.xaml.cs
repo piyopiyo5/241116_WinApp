@@ -1,4 +1,5 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Collections.ObjectModel;
+using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -123,15 +124,18 @@ public partial class MainWindow : Window
         }
     }
 
-    private void DisconnectButton_Click(object sender, RoutedEventArgs e)
+    private async void DisconnectButton_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            _connection?.Disconnect();
-            ConnectButton.IsEnabled = true;
-            DisconnectButton.IsEnabled = false;
-            SendTestButton.IsEnabled = false;
-            LogMessage("切断しました");
+            if (_connection != null)
+            {
+                await _connection.DisconnectAsync();
+                ConnectButton.IsEnabled = true;
+                DisconnectButton.IsEnabled = false;
+                SendTestButton.IsEnabled = false;
+                LogMessage("切断しました");
+            }
         }
         catch (Exception ex)
         {
@@ -181,9 +185,12 @@ public partial class MainWindow : Window
         }));
     }
 
-    protected override void OnClosed(EventArgs e)
+    protected override async void OnClosed(EventArgs e)
     {
-        _connection?.Disconnect();
+        if (_connection != null)
+        {
+            await _connection.DisconnectAsync();
+        }
         base.OnClosed(e);
     }
 }
