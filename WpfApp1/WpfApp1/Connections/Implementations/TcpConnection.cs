@@ -42,7 +42,8 @@ public class TcpConnection : IConnection
                 await Task.Run(() => _client.Client.Bind(new IPEndPoint(_settings.LocalAddress, 0)));
             }
 
-            await _client.ConnectAsync(_settings.IpAddress, _settings.Port);
+            var ipAddress = IPAddress.Parse(_settings.IpAddress);
+            await _client.ConnectAsync(ipAddress, _settings.Port);
             _stream = _client.GetStream();
 
             _receiveCts = new CancellationTokenSource();

@@ -25,7 +25,8 @@ public class FileLogger : ILogger
 
     public void LogError(string message, Exception ex)
     {
-        WriteToFile($"[ERROR] {message}\nException: {ex}");
+        WriteToFile($"[ERROR] {message}");
+        WriteToFile($"Exception: {ex}");
     }
 
     public void LogData(string direction, byte[] data)

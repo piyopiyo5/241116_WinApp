@@ -36,9 +36,10 @@ public class UdpConnection : IConnection
             _client = new UdpClient();
             if (_settings.LocalAddress != null)
             {
-                await Task.Run(() => _client.Client.Bind(new IPEndPoint(_settings.LocalAddress, 0)));
+                // 受信側: ローカルエンドポイントにバインド
+                _client.Client.Bind(new IPEndPoint(_settings.LocalAddress, _settings.Port));
             }
-            
+            // リモートエンドポイントを設定
             await Task.Run(() => _client.Connect(_settings.IpAddress, _settings.Port));
             _client.Client.ReceiveTimeout = Timeout;
             _client.Client.SendTimeout = Timeout;

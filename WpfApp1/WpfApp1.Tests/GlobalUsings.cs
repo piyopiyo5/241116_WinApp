@@ -1,0 +1,15 @@
+global using System;
+global using System.Threading;
+global using System.Threading.Tasks;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Net;
+global using System.Net.Sockets;
+global using System.IO;
+global using Xunit;
+global using Moq;
+global using WpfApp1.Connections.Implementations;
+global using WpfApp1.Connections.Interfaces;
+global using WpfApp1.Connections.Models;
+global using WpfApp1.Connections.Logging;
+global using WpfApp1.Connections.Statistics;
