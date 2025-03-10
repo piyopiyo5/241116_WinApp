@@ -1,0 +1,149 @@
+using System.IO.Ports;
+using WpfApp1.Connections.Interfaces;
+using WpfApp1.Connections.Models;
+using WpfApp1.Connections.Statistics;
+
+namespace WpfApp1.Connections.Implementations;
+
+public class SerialConnection : IConnection
+{
+    private readonly SerialSettings _settings;
+    private readonly ILogger _logger;
+    private SerialPort? _port;
+    private CancellationTokenSource? _receiveCts;
+    private bool _isConnected;
+
+    public bool IsConnected => _isConnected;
+    public int Timeout { get; set; } = 5000;
+    public int BufferSize { get; set; } = 1024;
+    public IConnectionStatistics Statistics { get; }
+
+    public event EventHandler<ConnectionEventArgs>? OnDataReceived;
+    public event EventHandler<ConnectionEventArgs>? OnError;
+
+    public SerialConnection(SerialSettings settings, ILogger logger)
+    {
+        _settings = settings;
+        _logger = logger;
+        Statistics = new ConnectionStatistics();
+    }
+
+    public async Task<bool> Connect()
+    {
+        try
+        {
+            _port = new SerialPort
+            {
+                PortName = _settings.PortName,
+                BaudRate = _settings.BaudRate,
+                Parity = _settings.Parity,
+                DataBits = _settings.DataBits,
+                StopBits = _settings.StopBits,
+                RtsEnable = _settings.RtsEnable,
+                DtrEnable = _settings.DtrEnable,
+                ReadTimeout = Timeout,
+                WriteTimeout = Timeout
+            };
+
+            _port.Open();
+            _receiveCts = new CancellationTokenSource();
+            _ = StartReceiving(_receiveCts.Token);
+
+            _isConnected = true;
+            ((ConnectionStatistics)Statistics).UpdateLastConnected();
+            _logger.LogInfo($"Connected to {_settings.PortName}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ((ConnectionStatistics)Statistics).IncrementErrorCount();
+            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+            _logger.LogError("Connection failed", ex);
+            return false;
+        }
+    }
+
+    public void Disconnect()
+    {
+        try
+        {
+            _receiveCts?.Cancel();
+            if (_port?.IsOpen == true)
+            {
+                _port.Close();
+            }
+            _port?.Dispose();
+            _port = null;
+            _isConnected = false;
+            _logger.LogInfo("Disconnected");
+        }
+        catch (Exception ex)
+        {
+            ((ConnectionStatistics)Statistics).IncrementErrorCount();
+            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+            _logger.LogError("Disconnect failed", ex);
+        }
+    }
+
+    public async Task<bool> SendAsync(byte[] data)
+    {
+        if (!IsConnected || _port?.IsOpen != true)
+        {
+            var ex = new InvalidOperationException("Not connected");
+            ((ConnectionStatistics)Statistics).IncrementErrorCount();
+            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+            return false;
+        }
+
+        try
+        {
+            await _port.BaseStream.WriteAsync(data);
+            await _port.BaseStream.FlushAsync();
+            ((ConnectionStatistics)Statistics).AddSentBytes(data.Length);
+            _logger.LogData("Sent", data);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ((ConnectionStatistics)Statistics).IncrementErrorCount();
+            OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+            _logger.LogError("Send failed", ex);
+            return false;
+        }
+    }
+
+    private async Task StartReceiving(CancellationToken cancellationToken)
+    {
+        var buffer = new byte[BufferSize];
+
+        while (!cancellationToken.IsCancellationRequested && _port?.IsOpen == true)
+        {
+            try
+            {
+                var bytesRead = await _port.BaseStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                if (bytesRead == 0)
+                {
+                    continue;
+                }
+
+                var receivedData = new byte[bytesRead];
+                Array.Copy(buffer, receivedData, bytesRead);
+
+                ((ConnectionStatistics)Statistics).AddReceivedBytes(bytesRead);
+                _logger.LogData("Received", receivedData);
+                OnDataReceived?.Invoke(this, new ConnectionEventArgs(receivedData));
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                ((ConnectionStatistics)Statistics).IncrementErrorCount();
+                OnError?.Invoke(this, new ConnectionEventArgs(error: ex));
+                _logger.LogError("Receive failed", ex);
+                break;
+            }
+        }
+    }
+}
