@@ -66,8 +66,11 @@ public partial class CommonWindow : UserControl
 
         // TCP/UDP用の設定
         var tcpUdpVisibility = !isSerial ? Visibility.Visible : Visibility.Collapsed;
+        NetworkInterfaceLabel.Visibility = tcpUdpVisibility;
         NetworkInterfaceComboBox.Visibility = tcpUdpVisibility;
+        AddressLabel.Visibility = tcpUdpVisibility;
         AddressTextBox.Visibility = tcpUdpVisibility;
+        PortLabel.Visibility = tcpUdpVisibility;
         PortTextBox.Visibility = tcpUdpVisibility;
 
         // シリアル用の設定

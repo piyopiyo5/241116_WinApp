@@ -39,13 +39,13 @@
                     </ComboBox>
 
                     <!-- TCP/UDP設定 -->
-                    <Label Grid.Row="1" Grid.Column="0" Content="使用NIC:"/>
+                    <Label x:Name="NetworkInterfaceLabel" Grid.Row="1" Grid.Column="0" Content="使用NIC:"/>
                     <ComboBox x:Name="NetworkInterfaceComboBox" Grid.Row="1" Grid.Column="1" Margin="2"/>
 
                     <!-- IP/ポート設定 -->
-                    <Label Grid.Row="2" Grid.Column="0" Content="アドレス:"/>
+                    <Label x:Name="AddressLabel" Grid.Row="2" Grid.Column="0" Content="アドレス:"/>
                     <TextBox x:Name="AddressTextBox" Grid.Row="2" Grid.Column="1" Margin="2"/>
-                    <Label Grid.Row="3" Grid.Column="0" Content="ポート:"/>
+                    <Label x:Name="PortLabel" Grid.Row="3" Grid.Column="0" Content="ポート:"/>
                     <TextBox x:Name="PortTextBox" Grid.Row="3" Grid.Column="1" Margin="2"/>
 
                     <!-- シリアル設定（初期状態で非表示） -->
