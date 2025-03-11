@@ -15,6 +15,7 @@ public class ConnectionService
     private readonly ILogger _logger;
 
     public event EventHandler<ConnectionEventArgs>? OnDataReceived;
+    public event EventHandler<ConnectionEventArgs>? OnDataSent;
     public event EventHandler<ConnectionEventArgs>? OnError;
     public event EventHandler<bool>? OnConnectionStateChanged;
 
@@ -55,6 +56,11 @@ public class ConnectionService
     public async Task<bool> SendAsync(byte[] data)
     {
         if (_currentConnection == null) return false;
-        return await _currentConnection.SendAsync(data);
+        var result = await _currentConnection.SendAsync(data);
+        if (result)
+        {
+            OnDataSent?.Invoke(this, new ConnectionEventArgs(data));
+        }
+        return result;
     }
 }

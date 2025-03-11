@@ -25,6 +25,7 @@ public partial class CommonWindow : UserControl
 
         // イベントハンドラの設定
         _connectionService.OnDataReceived += Connection_OnDataReceived;
+        _connectionService.OnDataSent += Connection_OnDataSent;
         _connectionService.OnError += Connection_OnError;
         _connectionService.OnConnectionStateChanged += Connection_OnConnectionStateChanged;
 
@@ -148,6 +149,12 @@ public partial class CommonWindow : UserControl
     {
         if (e.Data == null) return;
         LogMessage($"データ受信: {BitConverter.ToString(e.Data)}");
+    }
+
+    private void Connection_OnDataSent(object? sender, ConnectionEventArgs e)
+    {
+        if (e.Data == null) return;
+        LogMessage($"データ送信: {BitConverter.ToString(e.Data)}");
     }
 
     private void Connection_OnError(object? sender, ConnectionEventArgs e)
