@@ -4,6 +4,7 @@ using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using Microsoft.Win32;
 using WpfApp1.Connections.Implementations;
 using WpfApp1.Connections.Interfaces;
 using WpfApp1.Connections.Logging;
@@ -178,5 +179,34 @@ public partial class CommonWindow : UserControl
             LogTextBox.AppendText($"[{DateTime.Now:HH:mm:ss.fff}] {message}{Environment.NewLine}");
             LogTextBox.ScrollToEnd();
         });
+    }
+
+    private void ClearLogButton_Click(object sender, RoutedEventArgs e)
+    {
+        LogTextBox.Clear();
+    }
+
+    private void SaveLogButton_Click(object sender, RoutedEventArgs e)
+    {
+        var saveFileDialog = new SaveFileDialog
+        {
+            Filter = "テキストファイル (*.txt)|*.txt|すべてのファイル (*.*)|*.*",
+            DefaultExt = ".txt",
+            FileName = $"connection_log_{DateTime.Now:yyyyMMdd_HHmmss}.txt"
+        };
+
+        if (saveFileDialog.ShowDialog() == true)
+        {
+            try
+            {
+                System.IO.File.WriteAllText(saveFileDialog.FileName, LogTextBox.Text);
+                LogMessage("ログを保存しました: " + saveFileDialog.FileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"ログの保存中にエラーが発生しました: {ex.Message}", "エラー", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }

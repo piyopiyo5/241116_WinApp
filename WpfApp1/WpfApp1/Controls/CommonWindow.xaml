@@ -27,6 +27,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <!-- 通信方式選択 -->
@@ -59,22 +60,33 @@
                         <ComboBoxItem Content="57600"/>
                         <ComboBoxItem Content="115200"/>
                     </ComboBox>
+
+                    <!-- 接続ボタン -->
+                    <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" 
+                              Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Right">
+                        <Button x:Name="ConnectButton" Content="接続" Width="60" Click="ConnectButton_Click"/>
+                        <Button x:Name="DisconnectButton" Content="切断" Width="60" Margin="5,0,0,0" 
+                                Click="DisconnectButton_Click" IsEnabled="False"/>
+                    </StackPanel>
                 </Grid>
             </GroupBox>
         </StackPanel>
 
         <!-- ログ表示 -->
-        <TextBox x:Name="LogTextBox" Grid.Row="1" IsReadOnly="True" 
-                 VerticalScrollBarVisibility="Auto" 
-                 HorizontalScrollBarVisibility="Auto"
-                 FontFamily="Consolas"
-                 Margin="0,5"/>
+        <GroupBox Header="ログ" Grid.Row="1" Margin="0,5">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
+                    <Button x:Name="ClearLogButton" Content="クリア" Width="60"
+                            Click="ClearLogButton_Click"/>
+                    <Button x:Name="SaveLogButton" Content="保存" Width="60" 
+                            Margin="5,0,0,0" Click="SaveLogButton_Click"/>
+                </StackPanel>
+                <TextBox x:Name="LogTextBox" IsReadOnly="True" 
+                         VerticalScrollBarVisibility="Auto" 
+                         HorizontalScrollBarVisibility="Auto"
+                         FontFamily="Consolas"/>
+            </DockPanel>
+        </GroupBox>
 
-        <!-- 操作ボタン -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0">
-            <Button x:Name="ConnectButton" Content="接続" Width="60" Click="ConnectButton_Click"/>
-            <Button x:Name="DisconnectButton" Content="切断" Width="60" Margin="5,0,0,0" 
-                    Click="DisconnectButton_Click" IsEnabled="False"/>
-        </StackPanel>
     </Grid>
 </UserControl>
