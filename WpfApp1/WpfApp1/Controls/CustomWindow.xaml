@@ -1,0 +1,36 @@
+<UserControl x:Class="WpfApp1.Controls.CustomWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfApp1.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="600">
+    <Grid Margin="5">
+        <TabControl x:Name="MainTabControl">
+            <TabItem Header="Sample">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox x:Name="SendDataTextBox" 
+                             Grid.Row="0" 
+                             AcceptsReturn="True" 
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             Margin="0,0,0,10"/>
+
+                    <Button x:Name="SendButton" 
+                            Grid.Row="1" 
+                            Content="送信" 
+                            Width="80" 
+                            HorizontalAlignment="Right"
+                            Click="SendButton_Click"
+                            IsEnabled="{Binding IsConnected}"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>
