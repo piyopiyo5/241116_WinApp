@@ -13,6 +13,103 @@ TCP、UDP、シリアル通信を統一的なインターフェースで扱う�
 - ログ機能
 - 通信統計と診断機能
 
+## クラス図
+
+```mermaid
+classDiagram
+    class IConnection {
+        <<interface>>
+        +bool IsConnected
+        +int Timeout
+        +int BufferSize
+        +IConnectionStatistics Statistics
+        +OnDataReceived: event
+        +OnError: event
+        +Connect() Task~bool~
+        +DisconnectAsync() Task
+        +SendAsync(byte[]) Task~bool~
+    }
+    
+    class IConnectionStatistics {
+        <<interface>>
+        +long BytesSent
+        +long BytesReceived
+        +int ErrorCount
+        +TimeSpan Uptime
+        +DateTime LastConnected
+        +DateTime LastError
+        +Reset() void
+    }
+    
+    class ILogger {
+        <<interface>>
+        +LogInfo(string) void
+        +LogError(string, Exception) void
+        +LogData(string, byte[]) void
+    }
+    
+    class NetworkSettings {
+        +string IpAddress
+        +int Port
+        +IPAddress? LocalAddress
+        +GetAvailableInterfaces() List~NetworkInterface~
+    }
+    
+    class SerialSettings {
+        +string PortName
+        +int BaudRate
+        +Parity Parity
+        +int DataBits
+        +StopBits StopBits
+        +bool RtsEnable
+        +bool DtrEnable
+        +GetAvailablePorts() string[]
+    }
+    
+    class ConnectionEventArgs {
+        +byte[]? Data
+        +string Message
+        +Exception? Error
+        +DateTime Timestamp
+    }
+    
+    class TcpConnection {
+        +TcpConnection(NetworkSettings, ILogger)
+    }
+    
+    class UdpConnection {
+        +UdpConnection(NetworkSettings, ILogger)
+    }
+    
+    class SerialConnection {
+        +SerialConnection(SerialSettings, ILogger)
+    }
+    
+    class FileLogger {
+        +FileLogger(string)
+    }
+    
+    class ConnectionStatistics {
+        +ConnectionStatistics()
+    }
+    
+    IConnection <|.. TcpConnection
+    IConnection <|.. UdpConnection
+    IConnection <|.. SerialConnection
+    ILogger <|.. FileLogger
+    IConnectionStatistics <|.. ConnectionStatistics
+    TcpConnection --> NetworkSettings
+    UdpConnection --> NetworkSettings
+    SerialConnection --> SerialSettings
+    TcpConnection --> ILogger
+    UdpConnection --> ILogger
+    SerialConnection --> ILogger
+    IConnection --> IConnectionStatistics
+    TcpConnection --> ConnectionEventArgs
+    UdpConnection --> ConnectionEventArgs
+    SerialConnection --> ConnectionEventArgs
+```
+
 ## プロジェクト構成
 
 ```
