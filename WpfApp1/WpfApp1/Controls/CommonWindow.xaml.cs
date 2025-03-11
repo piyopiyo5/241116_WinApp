@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text;
 using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,12 +12,16 @@ using WpfApp1.Connections.Logging;
 using WpfApp1.Connections.Models;
 using WpfApp1.Services;
 
-namespace WpfApp1.Controls;
-
-public partial class CommonWindow : UserControl
+namespace WpfApp1.Controls
 {
+    /// <summary>
+    /// CommonWindow.xaml の相互作用ロジック
+    /// </summary>
+    public partial class CommonWindow : UserControl
+    {
     private readonly ConnectionService _connectionService;
     private readonly ILogger _logger;
+    private readonly DispatcherTimer _statisticsTimer;
 
     public CommonWindow()
     {
@@ -31,6 +36,13 @@ public partial class CommonWindow : UserControl
         _connectionService.OnConnectionStateChanged += Connection_OnConnectionStateChanged;
 
         // 初期化
+        // 統計情報更新タイマーの設定
+        _statisticsTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(1)
+        };
+        _statisticsTimer.Tick += StatisticsTimer_Tick;
+
         InitializeUI();
         CommunicationTypeComboBox.SelectedIndex = 0;
     }
@@ -169,7 +181,74 @@ public partial class CommonWindow : UserControl
         {
             ConnectButton.IsEnabled = !connected;
             DisconnectButton.IsEnabled = connected;
+
+            if (connected)
+            {
+                _statisticsTimer.Start();
+            }
+            else
+            {
+                _statisticsTimer.Stop();
+                ClearStatistics();
+            }
         });
+    }
+
+    private void StatisticsTimer_Tick(object? sender, EventArgs e)
+    {
+        if (_connectionService.Statistics != null)
+        {
+            UpdateStatistics(_connectionService.Statistics);
+        }
+    }
+
+    private void UpdateStatistics(IConnectionStatistics stats)
+    {
+        BytesSentText.Text = FormatByteCount(stats.BytesSent);
+        BytesReceivedText.Text = FormatByteCount(stats.BytesReceived);
+        ErrorCountText.Text = stats.ErrorCount.ToString();
+        UptimeText.Text = FormatTimeSpan(stats.Uptime);
+        LastConnectedText.Text = FormatDateTime(stats.LastConnected);
+        LastErrorText.Text = FormatDateTime(stats.LastError);
+    }
+
+    private void ClearStatistics()
+    {
+        BytesSentText.Text = string.Empty;
+        BytesReceivedText.Text = string.Empty;
+        ErrorCountText.Text = string.Empty;
+        UptimeText.Text = string.Empty;
+        LastConnectedText.Text = string.Empty;
+        LastErrorText.Text = string.Empty;
+    }
+
+    private static string FormatByteCount(long bytes)
+    {
+        string[] suffixes = { "B", "KB", "MB", "GB", "TB" };
+        int suffixIndex = 0;
+        double size = bytes;
+
+        while (size >= 1024 && suffixIndex < suffixes.Length - 1)
+        {
+            size /= 1024;
+            suffixIndex++;
+        }
+
+        return $"{size:N2} {suffixes[suffixIndex]}";
+    }
+
+    private static string FormatTimeSpan(TimeSpan span)
+    {
+        if (span.TotalDays >= 1)
+        {
+            return $"{(int)span.TotalDays}日 {span.Hours:D2}:{span.Minutes:D2}:{span.Seconds:D2}";
+        }
+        return $"{span.Hours:D2}:{span.Minutes:D2}:{span.Seconds:D2}";
+    }
+
+    private static string FormatDateTime(DateTime dt)
+    {
+        return dt == DateTime.MinValue ? "-" : dt.ToString("yyyy/MM/dd HH:mm:ss");
     }
 
     public void LogMessage(string message)
@@ -186,26 +265,27 @@ public partial class CommonWindow : UserControl
         LogTextBox.Clear();
     }
 
-    private void SaveLogButton_Click(object sender, RoutedEventArgs e)
-    {
-        var saveFileDialog = new SaveFileDialog
+        private void SaveLogButton_Click(object sender, RoutedEventArgs e)
         {
-            Filter = "テキストファイル (*.txt)|*.txt|すべてのファイル (*.*)|*.*",
-            DefaultExt = ".txt",
-            FileName = $"connection_log_{DateTime.Now:yyyyMMdd_HHmmss}.txt"
-        };
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "テキストファイル (*.txt)|*.txt|すべてのファイル (*.*)|*.*",
+                DefaultExt = ".txt",
+                FileName = $"connection_log_{DateTime.Now:yyyyMMdd_HHmmss}.txt"
+            };
 
-        if (saveFileDialog.ShowDialog() == true)
-        {
-            try
+            if (saveFileDialog.ShowDialog() == true)
             {
-                System.IO.File.WriteAllText(saveFileDialog.FileName, LogTextBox.Text);
-                LogMessage("ログを保存しました: " + saveFileDialog.FileName);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"ログの保存中にエラーが発生しました: {ex.Message}", "エラー", 
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                try
+                {
+                    System.IO.File.WriteAllText(saveFileDialog.FileName, LogTextBox.Text);
+                    LogMessage("ログを保存しました: " + saveFileDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"ログの保存中にエラーが発生しました: {ex.Message}", "エラー", 
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

@@ -16,7 +16,8 @@ public class SerialConnection : IConnection
     public bool IsConnected => _isConnected;
     public int Timeout { get; set; } = 5000;
     public int BufferSize { get; set; } = 1024;
-    public IConnectionStatistics Statistics { get; }
+    private readonly ConnectionStatistics _statistics = new();
+    public IConnectionStatistics Statistics => _statistics;
 
     public event EventHandler<ConnectionEventArgs>? OnDataReceived;
     public event EventHandler<ConnectionEventArgs>? OnError;
@@ -25,7 +26,6 @@ public class SerialConnection : IConnection
     {
         _settings = settings;
         _logger = logger;
-        Statistics = new ConnectionStatistics();
     }
 
     public async Task<bool> Connect()

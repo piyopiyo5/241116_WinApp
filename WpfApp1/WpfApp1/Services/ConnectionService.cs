@@ -14,6 +14,9 @@ public class ConnectionService
     private IConnection? _currentConnection;
     private readonly ILogger _logger;
 
+    public IConnection? CurrentConnection => _currentConnection;
+    public IConnectionStatistics? Statistics => _currentConnection?.Statistics;
+
     public event EventHandler<ConnectionEventArgs>? OnDataReceived;
     public event EventHandler<ConnectionEventArgs>? OnDataSent;
     public event EventHandler<ConnectionEventArgs>? OnError;
