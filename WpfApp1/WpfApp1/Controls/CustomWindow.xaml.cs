@@ -44,10 +44,7 @@ public partial class CustomWindow : UserControl, INotifyPropertyChanged
         try
         {
             var data = Encoding.UTF8.GetBytes(SendDataTextBox.Text);
-            if (await _connectionService.SendAsync(data))
-            {
-                SendDataTextBox.Clear();
-            }
+            await _connectionService.SendAsync(data);
         }
         catch (Exception ex)
         {
